@@ -14,10 +14,10 @@ ReactDOM.render(
 		<React.StrictMode>
 			<HashRouter>
 				<Switch>
-					<Route path={`/auth`} component={SignInCentered} />
+					<Route path={`/`} component={SignInCentered} />
 					<Route path={`/admin`} component={AdminLayout} />
 					<Route path={`/rtl`} component={RTLLayout} />
-					<Redirect from='/' to='/auth' />
+					{/* <Redirect from='/' to='/auth' /> */}
 				</Switch>
 			</HashRouter>
 		</React.StrictMode>
