@@ -25,7 +25,7 @@ export default function MiniCalendar(props: { selectRange: boolean; [x: string]:
 				value={value}
 				selectRange={selectRange}
 				view={'month'}
-				tileContent={<Text color='brand.500' />}
+				tileContent={<Text color='tesl' />}
 				prevLabel={<Icon as={MdChevronLeft} w='24px' h='24px' mt='4px' />}
 				nextLabel={<Icon as={MdChevronRight} w='24px' h='24px' mt='4px' />}
 			/>

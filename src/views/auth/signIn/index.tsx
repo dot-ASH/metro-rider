@@ -21,8 +21,8 @@
 
 */
 
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { NavLink, useHistory } from "react-router-dom";
 // Chakra imports
 import {
   Box,
@@ -38,7 +38,8 @@ import {
   InputRightElement,
   Text,
   useColorModeValue,
-  Image
+  Image,
+  useToast,
 } from "@chakra-ui/react";
 // Custom components
 import { HSeparator } from "components/separator/Separator";
@@ -48,15 +49,31 @@ import illustration from "assets/img/auth/auth.png";
 import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
-import logo from "../../../assets/img/logo.png"
+import logo from "../../../assets/img/logo.png";
+import Cookies from "universal-cookie";
+import { sha256HashPin } from "../../../security/encrypt";
+import supabase from "data/supabase";
+import { generate, count } from "random-words";
+import AuthContext from "contexts/AuthContext";
 
 function SignIn() {
+
+  const [show, setShow] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [remember, setRemember] = useState<boolean>(false);
+  const { signin } = useContext(AuthContext);
+  const secretKey = generate({ minLength: 5, maxLength: 5 });
+  const history = useHistory();
+  const toast = useToast();
+
+
   // Chakra color mode
   const textColor = useColorModeValue("navy.700", "white");
   const textColorSecondary = "gray.400";
   const textColorDetails = useColorModeValue("navy.700", "secondaryGray.600");
-  const textColorBrand = useColorModeValue("brand.500", "white");
-  const brandStars = useColorModeValue("brand.500", "brand.400");
+  const textColorBrand = useColorModeValue("tesl", "white");
+  const brandStars = useColorModeValue("tesl", "brand.400");
   const googleBg = useColorModeValue("secondaryGray.300", "whiteAlpha.200");
   const googleText = useColorModeValue("navy.700", "white");
   const googleHover = useColorModeValue(
@@ -67,87 +84,150 @@ function SignIn() {
     { bg: "secondaryGray.300" },
     { bg: "whiteAlpha.200" }
   );
-  const [show, setShow] = React.useState(false);
+
+  const toastText = (
+    title: string,
+    description: string,
+    status: "info" | "warning" | "success" | "error"
+  ) => {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      duration: 6000,
+      isClosable: true,
+    });
+  };
+
   const handleClick = () => setShow(!show);
+
+  const handleLogin = async () => {
+    let hashedUserInput = sha256HashPin(password + secretKey);
+    let hashedPassInput = sha256HashPin(password);
+    const { data, error } = await supabase
+      .from("admin")
+      .select("*")
+      .eq("username", username)
+      .eq("password", hashedPassInput);
+
+    if (error) {
+      console.log(error);
+    } else {
+      if (data.length) {
+        toastText("Success", "Signing in...", "success");
+
+        const { data, error } = await supabase
+          .from("admin")
+          .update({ token: hashedUserInput })
+          .eq("username", username);
+
+        if (!error) {
+          signin(hashedUserInput, remember);
+          history.push("/admin");
+        }
+      } else {
+        toastText(
+          "Check you credential",
+          "Wrong password or useranme",
+          "error"
+        );
+      }
+    }
+  };
+
   return (
     <>
-      <Flex w='100%' justifyContent='center' alignItems="center" h='100vh'>
+      <Flex w="100%" justifyContent="center" alignItems="center" h="100vh">
         <Flex
           maxW={{ base: "100%", md: "max-content" }}
-          w='100%'
+          w="100%"
           mx={{ base: "auto" }}
-          me='auto'
-          alignItems='center'
-          justifyContent='center'
+          me="auto"
+          alignItems="center"
+          justifyContent="center"
           mb={{ base: "30px", md: "60px" }}
           px={{ base: "25px", md: "0px" }}
           mt={{ base: "40px", md: "14vh" }}
-          flexDirection='column'>
-          <Image src={logo} width="100px" my="3rem" mt='-3rem' />
-          <Box me='auto' w='100%'>
-            <Heading color={textColor} fontSize='36px' mb='10px' textAlign="center">
+          flexDirection="column"
+        >
+          <Image src={logo} width="100px" my="3rem" mt="-3rem" />
+          <Box me="auto" w="100%">
+            <Heading
+              color={textColor}
+              fontSize="36px"
+              mb="10px"
+              textAlign="center"
+            >
               Sign In
             </Heading>
             <Text
               textAlign="center"
-              mb='36px'
-              ms='4px'
+              mb="36px"
+              ms="4px"
               color={textColorSecondary}
-              fontWeight='400'
-              fontSize='md'>
+              fontWeight="400"
+              fontSize="md"
+            >
               Enter your email and password to sign in!
             </Text>
           </Box>
           <Flex
-            zIndex='2'
-            direction='column'
+            zIndex="2"
+            direction="column"
             w={{ base: "100%", md: "420px" }}
-            maxW='100%'
-            background='transparent'
-            borderRadius='15px'
+            maxW="100%"
+            background="transparent"
+            borderRadius="15px"
             mx={{ base: "auto", lg: "unset" }}
-            me='auto'
-            mb={{ base: "20px", md: "auto" }}>
+            me="auto"
+            mb={{ base: "20px", md: "auto" }}
+          >
             <FormControl>
               <FormLabel
-                display='flex'
-                ms='4px'
-                fontSize='sm'
-                fontWeight='500'
+                display="flex"
+                ms="4px"
+                fontSize="sm"
+                fontWeight="500"
                 color={textColor}
-                mb='8px'>
-                Email<Text color={brandStars}>*</Text>
+                mb="8px"
+              >
+                Username<Text color={brandStars}>*</Text>
               </FormLabel>
               <Input
                 isRequired={true}
-                variant='auth'
-                fontSize='sm'
+                variant="auth"
+                fontSize="sm"
                 ms={{ base: "0px", md: "0px" }}
-                type='email'
-                placeholder='mail@simmmple.com'
-                mb='24px'
-                fontWeight='500'
-                size='lg'
+                type="email"
+                placeholder="mail@simmmple.com"
+                mb="24px"
+                fontWeight="500"
+                size="lg"
+                onChange={(event) => setUsername(event.target.value)}
+                required
               />
               <FormLabel
-                ms='4px'
-                fontSize='sm'
-                fontWeight='500'
+                ms="4px"
+                fontSize="sm"
+                fontWeight="500"
                 color={textColor}
-                display='flex'>
+                display="flex"
+              >
                 Password<Text color={brandStars}>*</Text>
               </FormLabel>
-              <InputGroup size='md'>
+              <InputGroup size="md">
                 <Input
                   isRequired={true}
-                  fontSize='sm'
-                  placeholder='Min. 8 characters'
-                  mb='24px'
-                  size='lg'
+                  fontSize="sm"
+                  placeholder="Min. 8 characters"
+                  mb="24px"
+                  size="lg"
                   type={show ? "text" : "password"}
-                  variant='auth'
+                  onChange={(event) => setPassword(event.target.value)}
+                  variant="auth"
+                  required
                 />
-                <InputRightElement display='flex' alignItems='center' mt='4px'>
+                <InputRightElement display="flex" alignItems="center" mt="4px">
                   <Icon
                     color={textColorSecondary}
                     _hover={{ cursor: "pointer" }}
@@ -156,63 +236,38 @@ function SignIn() {
                   />
                 </InputRightElement>
               </InputGroup>
-              <Flex justifyContent='space-between' align='center' mb='24px'>
-                <FormControl display='flex' alignItems='center'>
+              <Flex justifyContent="space-between" align="center" mb="24px">
+                <FormControl display="flex" alignItems="center">
                   <Checkbox
-                    id='remember-login'
-                    colorScheme='brandScheme'
-                    me='10px'
+                    id="remember-login"
+                    colorScheme="brandScheme"
+                    me="10px"
+                    onChange={() => setRemember((prev) => !prev)}
                   />
                   <FormLabel
-                    htmlFor='remember-login'
-                    mb='0'
-                    fontWeight='normal'
+                    htmlFor="remember-login"
+                    mb="0"
+                    fontWeight="normal"
                     color={textColor}
-                    fontSize='sm'>
+                    fontSize="sm"
+                  >
                     Keep me logged in
                   </FormLabel>
                 </FormControl>
-                <NavLink to='/auth/forgot-password'>
-                  <Text
-                    color={textColorBrand}
-                    fontSize='sm'
-                    w='124px'
-                    fontWeight='500'>
-                    Forgot password?
-                  </Text>
-                </NavLink>
               </Flex>
               <Button
                 colorScheme="teal"
-                variant='solid'
-                fontSize='sm'
-                fontWeight='500'
-                w='100%'
-                h='50'
-                mb='24px'
+                variant="solid"
+                fontSize="sm"
+                fontWeight="500"
+                w="100%"
+                h="50"
+                mb="24px"
+                onClick={() => handleLogin()}
               >
                 Sign In
               </Button>
             </FormControl>
-            <Flex
-              flexDirection='column'
-              justifyContent='center'
-              alignItems='start'
-              maxW='100%'
-              mt='0px'>
-              <Text color={textColorDetails} fontWeight='400' fontSize='14px'>
-                Not registered yet?
-                <NavLink to='/auth/sign-up'>
-                  <Text
-                    color={textColorBrand}
-                    as='span'
-                    ms='5px'
-                    fontWeight='500'>
-                    Create an Account
-                  </Text>
-                </NavLink>
-              </Text>
-            </Flex>
           </Flex>
         </Flex>
       </Flex>

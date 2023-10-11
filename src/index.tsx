@@ -1,26 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './assets/css/App.css';
-import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
-// import AuthLayout from './layouts/auth';
-import AdminLayout from './layouts/admin';
-import RTLLayout from './layouts/rtl';
 import { ChakraProvider } from '@chakra-ui/react';
 import theme from './theme/theme';
-import SignInCentered from 'views/auth/signIn';
+import { AppRouter } from './router';
+import { AuthProvider } from './contexts/AuthContext';
 
 ReactDOM.render(
 	<ChakraProvider theme={theme}>
+		<AuthProvider>
 		<React.StrictMode>
-			<HashRouter>
-				<Switch>
-					<Route path={`/`} component={SignInCentered} />
-					<Route path={`/admin`} component={AdminLayout} />
-					<Route path={`/rtl`} component={RTLLayout} />
-					{/* <Redirect from='/' to='/auth' /> */}
-				</Switch>
-			</HashRouter>
+			<AppRouter />
 		</React.StrictMode>
+		</AuthProvider>
 	</ChakraProvider>,
 	document.getElementById('root')
 );

@@ -11,7 +11,7 @@ export default function WeeklyRevenue(props: { [x: string]: any }) {
 
 	// Chakra Color Mode
 	const textColor = useColorModeValue('secondaryGray.900', 'white');
-	const iconColor = useColorModeValue('brand.500', 'white');
+	const iconColor = useColorModeValue('tesl', 'white');
 	const bgButton = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 	const bgHover = useColorModeValue({ bg: 'secondaryGray.400' }, { bg: 'whiteAlpha.50' });
 	const bgFocus = useColorModeValue({ bg: 'secondaryGray.300' }, { bg: 'whiteAlpha.100' });
