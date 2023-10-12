@@ -25,10 +25,10 @@ export const AppRouter = () => {
             hasSession ? <AdminLayout /> : <Redirect to="/auth" />
           }
         />
-        <Route
+        {/* <Route
           path={"/rtl"}
           render={() => (hasSession ? <RTLLayout /> : <Redirect to="/auth" />)}
-        />
+        /> */}
         <Redirect from="/" to={hasSession ? "admin" : "auth"} />
       </Route>
     </BrowserRouter>

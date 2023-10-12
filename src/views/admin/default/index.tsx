@@ -1,12 +1,12 @@
 import {
-  Avatar,
+  //   Avatar,
   Box,
-  Flex,
-  FormLabel,
-  Icon,
-  Select,
+  //   Flex,
+  //   FormLabel,
+  //   Icon,
+  //   Select,
   SimpleGrid,
-  useColorModeValue,
+  //   useColorModeValue,
 } from "@chakra-ui/react";
 
 // import Usa from 'assets/img/dashboards/usa.png';
@@ -23,16 +23,23 @@ import {
 // import tableDataCheck from 'views/admin/default/variables/tableDataCheck';
 
 import MiniCalendar from "components/calendar/MiniCalendar";
-import ComplexTable from "views/admin/default/components/ComplexTable";
-import Tasks from "views/admin/default/components/Tasks";
-import tableDataComplex from "views/admin/default/variables/tableDataComplex";
+import UserRequestData from "views/admin/default/components/UserRequestData";
+import UserSuspendData from "views/admin/default/components/UserSuspendData";
 
 export default function UserReports() {
   // Chakra Color Mode
-  const brandColor = useColorModeValue("tesl", "white");
-  const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
+  //   const brandColor = useColorModeValue("tesl", "white");
+  //   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
   return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
+      <SimpleGrid columns={{ base: 1, md: 1, xl: 1 }} gap="20px" mb="20px">
+        <UserRequestData />
+      </SimpleGrid>
+
+      <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
+        <UserSuspendData />
+        <MiniCalendar h="100%" minW="100%" selectRange={false} />
+      </SimpleGrid>
       {/* <SimpleGrid columns={{ base: 1, md: 2, lg: 3, '2xl': 6 }} gap='20px' mb='20px'>
 				<MiniStatistics
 					startContent={
@@ -112,15 +119,6 @@ export default function UserReports() {
 					<PieCard />
 				</SimpleGrid>
 			</SimpleGrid> */}
-
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 1 }} gap="20px" mb="20px">
-        <ComplexTable tableData={tableDataComplex} />
-      </SimpleGrid>
-	  
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
-        <Tasks />
-        <MiniCalendar h="100%" minW="100%" selectRange={false} />
-      </SimpleGrid>
     </Box>
   );
 }

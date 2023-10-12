@@ -23,7 +23,7 @@
 
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useHistory } from "react-router-dom";
-// Chakra imports
+
 import {
   Box,
   Button,
@@ -53,20 +53,18 @@ import logo from "../../../assets/img/logo.png";
 import Cookies from "universal-cookie";
 import { sha256HashPin } from "../../../security/encrypt";
 import supabase from "data/supabase";
-import { generate, count } from "random-words";
 import AuthContext from "contexts/AuthContext";
+import Chance from "chance";
 
 function SignIn() {
-
   const [show, setShow] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [remember, setRemember] = useState<boolean>(false);
   const { signin } = useContext(AuthContext);
-  const secretKey = generate({ minLength: 5, maxLength: 5 });
   const history = useHistory();
   const toast = useToast();
-
+  const chance = new Chance();
 
   // Chakra color mode
   const textColor = useColorModeValue("navy.700", "white");
@@ -100,6 +98,7 @@ function SignIn() {
   };
 
   const handleClick = () => setShow(!show);
+  let secretKey = chance.word({ length: 5 });
 
   const handleLogin = async () => {
     let hashedUserInput = sha256HashPin(password + secretKey);
