@@ -5,7 +5,7 @@ export const sliderStyles = {
 			variants: {
 				main: (props: any) => ({
 					thumb: {
-						bg: mode('tesl', 'brand.400')(props)
+						bg: mode('teal', 'brand.400')(props)
 					}
 				})
 			}

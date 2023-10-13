@@ -12,7 +12,7 @@ export default function Banner(props: { used: number; total: number; [x: string]
 	const { used, total } = props;
 	// Chakra Color Mode
 	const textColorPrimary = useColorModeValue('secondaryGray.900', 'white');
-	const brandColor = useColorModeValue('tesl', 'white');
+	const brandColor = useColorModeValue('teal', 'white');
 	const textColorSecondary = 'gray.400';
 	const box = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 	return (

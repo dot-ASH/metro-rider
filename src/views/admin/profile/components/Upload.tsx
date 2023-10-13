@@ -10,7 +10,7 @@ export default function Upload(props: { used?: number; total?: number; [x: strin
 	const { used, total, ...rest } = props;
 	// Chakra Color Mode
 	const textColorPrimary = useColorModeValue('secondaryGray.900', 'white');
-	const brandColor = useColorModeValue('tesl', 'white');
+	const brandColor = useColorModeValue('teal', 'white');
 	const textColorSecondary = 'gray.400';
 	return (
 		<Card {...rest} mb='20px' alignItems='center' p='20px'>

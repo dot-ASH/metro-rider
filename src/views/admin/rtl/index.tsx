@@ -42,7 +42,7 @@ import tableDataComplex from 'views/admin/rtl/variables/tableDataComplex';
 
 export default function UserReports() {
 	// Chakra Color Mode
-	const brandColor = useColorModeValue('tesl', 'white');
+	const brandColor = useColorModeValue('teal', 'white');
 	const boxBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 	return (
 		<Box pt={{ base: '130px', md: '80px', xl: '80px' }}>

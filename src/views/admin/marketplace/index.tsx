@@ -48,7 +48,7 @@ import tableDataTopCreators from 'views/admin/marketplace/variables/tableDataTop
 export default function Marketplace() {
 	// Chakra Color Mode
 	const textColor = useColorModeValue('secondaryGray.900', 'white');
-	const textColorBrand = useColorModeValue('tesl', 'white');
+	const textColorBrand = useColorModeValue('teal', 'white');
 	return (
 		<Box pt={{ base: '180px', md: '80px', xl: '80px' }}>
 			{/* Main Fields */}

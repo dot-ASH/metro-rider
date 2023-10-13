@@ -17,7 +17,7 @@ export default function NFT(props: {
 	const { image, name, author, bidders, download, currentbid } = props;
 	const [ like, setLike ] = useState(false);
 	const textColor = useColorModeValue('navy.700', 'white');
-	const textColorBid = useColorModeValue('tesl', 'white');
+	const textColorBid = useColorModeValue('teal', 'white');
 	return (
 		<Card p='20px'>
 			<Flex direction={{ base: 'column' }} justify='center'>
@@ -48,7 +48,7 @@ export default function NFT(props: {
 							w='20px'
 							h='20px'
 							as={like ? IoHeart : IoHeartOutline}
-							color='tesl'
+							color='teal'
 						/>
 					</Button>
 				</Box>

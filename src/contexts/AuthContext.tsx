@@ -40,26 +40,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [admin, setAdmin] = useState<adminData[]>([]);
   const [hasSession, setSession] = useState<boolean>(false);
   const cookies = new Cookies();
+  const hasCookie = cookies.get("token");
 
   const getAdmin = useCallback(async () => {
-    const hasCookie = cookies.get("token");
     if (typeof hasCookie !== "undefined") {
       const { data } = await supabase
-        .from("admin")
-        .select("id, name, position")
+        .from("Auth")
+        .select("id")
         .eq("token", hasCookie);
-      if (data) {
-        setAdmin(data);
+      let id = data[0]?.id;
+      if (id) {
         setSession(true);
+        const { data } = await supabase
+          .from("admin")
+          .select("id, name, position")
+          .eq("id", id);
+        setAdmin(data);
       }
+    } else {
+      setAdmin([]);
+      setSession(false);
     }
-  }, []);
+  }, [hasCookie]);
 
   useEffect(() => {
     getAdmin();
   }, [getAdmin]);
 
-  const signin = (hashedUserInput: string, remember: boolean): void => {
+  const signin = async (
+    hashedUserInput: string,
+    remember: boolean,
+    id: number
+  ): void => {
+    const { error } = await supabase
+      .from("Auth")
+      .insert({ token: hashedUserInput, id: id });
+    if (error) {
+      throw new Error(error);
+    }
     var expiryDate = new Date();
     expiryDate.setMonth(expiryDate.getMonth() + 1);
     cookies.set("token", hashedUserInput, {
@@ -71,11 +89,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setSession(true);
   };
 
-  const signout = () => {
+  const signout = async () => {
+    const { error } = await supabase
+      .from("Auth")
+      .delete()
+      .eq("token", hasCookie);
+    if (error) {
+      throw new Error(error);
+    }
     cookies.remove("token", { path: "/" });
     setAdmin([]);
     setSession(false);
   };
+
+  // console.log(admin);
 
   return (
     <AuthContext.Provider

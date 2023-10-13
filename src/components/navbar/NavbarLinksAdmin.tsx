@@ -4,8 +4,6 @@ import {
   Button,
   Flex,
   Icon,
-  Image,
-  Link,
   Menu,
   MenuButton,
   MenuItem,
@@ -22,8 +20,7 @@ import { SidebarResponsive } from "components/sidebar/Sidebar";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
 // Assets
-import navImage from "assets/img/layout/Navbar.png";
-import { MdNotificationsNone, MdInfoOutline } from "react-icons/md";
+import { MdNotificationsNone } from "react-icons/md";
 import { IoMdMoon, IoMdSunny } from "react-icons/io";
 import { FaEthereum } from "react-icons/fa";
 import routes from "routes";
@@ -45,14 +42,15 @@ export default function HeaderLinks(props: { secondary: boolean }) {
     "14px 17px 40px 4px rgba(112, 144, 176, 0.18)",
     "14px 17px 40px 4px rgba(112, 144, 176, 0.06)"
   );
-  const borderButton = useColorModeValue("secondaryGray.500", "whiteAlpha.200");
+
   const { admin, signout } = useContext(AuthContext);
   const history = useHistory();
-
   const signOut = () => {
     signout();
     history.push("/auth");
   };
+
+  console.log(admin);
 
   return (
     <Flex
@@ -192,8 +190,8 @@ export default function HeaderLinks(props: { secondary: boolean }) {
           <Avatar
             _hover={{ cursor: "pointer" }}
             color="white"
-            name={admin[0].name}
-            bg="#11047A"
+            name={admin[0]?.name}
+            bg="teal"
             size="sm"
             w="40px"
             h="40px"
@@ -219,7 +217,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
               fontWeight="700"
               color={textColor}
             >
-               {admin[0].name}
+              {admin[0]?.name}
             </Text>
           </Flex>
           <Flex flexDirection="column" p="10px">

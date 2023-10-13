@@ -29,7 +29,7 @@ export default function Banner(props: { [x: string]: any }) {
 		{ color: 'secondaryGray.900', bg: 'unset' },
 		{ color: 'secondaryGray.500', bg: 'unset' }
 	);
-	const iconColor = useColorModeValue('tesl', 'white');
+	const iconColor = useColorModeValue('teal', 'white');
 	const bgList = useColorModeValue('white', 'whiteAlpha.100');
 	const bgShadow = useColorModeValue('14px 17px 40px 4px rgba(112, 144, 176, 0.08)', 'unset');
 	const bgButton = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');

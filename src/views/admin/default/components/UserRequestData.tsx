@@ -34,8 +34,7 @@ import supabase from "data/supabase";
 import moment from "moment";
 import Chance from "chance";
 import { sha256HashPin } from "security/encrypt";
-import { sendmail } from "data/sendmail";
-import axios from 'axios';
+// import sendmail from "data/sendmail";
 
 type RowObj = {
   name: string;
@@ -47,8 +46,6 @@ type RowObj = {
   phn_no: string;
 };
 
-
-
 export default function ComplexTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [tableData, setTableData] = useState<RowObj[]>([]);
@@ -56,33 +53,8 @@ export default function ComplexTable() {
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
   const columnHelper = createColumnHelper<RowObj>();
-  const RESEND_KEY = process.env.REACT_APP_RESEND_API_KEY;
+  // const RESEND_KEY = process.env.REACT_APP_RESEND_API_KEY;
   const chance = new Chance();
-
-  const sendEmail = async (mail: string, pin: string): Promise<Response> => {
-    try {
-      const apiUrl = 'https://api.resend.com/emails';
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-  
-      const response = await axios.post(apiUrl, {
-        from: 'Metro Rider <metro_rider@resend.dev>',
-        to: [mail],
-        subject: 'Your Account is Registered',
-        html: `<p>Now you can login using our app<br/>Now login with these pin <strong>${pin}</strong><br />And you should change it from app settings</p>`,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${RESEND_KEY}`,
-        },
-      });
-  
-      console.log('Response:', response.data);
-      return new Response(JSON.stringify(response.data));
-    } catch (error) {
-      console.error('Error:', error);
-      // throw new Error('Failed to send email');
-    }
-  };
 
   async function fetchReq() {
     try {
@@ -117,27 +89,27 @@ export default function ComplexTable() {
     let userInt = chance.integer({ min: 100000000, max: 999999999 });
     let secureNum = sha256HashPin(randomInt);
 
-    // const { error } = await supabase
-    //   .from("user")
-    //   .update({
-    //     approved: true,
-    //     nid: null,
-    //     status: "approved"
-    //   })
-    //   .eq("email", email);
+    const { error } = await supabase
+      .from("user")
+      .update({
+        approved: true,
+        nid: null,
+        status: "approved",
+      })
+      .eq("email", email);
 
-    // if (error) {
-    //   console.log(error);
-    // } else {
-    // const { error } = await supabase
-    //   .from("user_data")
-    //   .insert({ user_index: userInt, verify_pin: secureNum, phn_no: phone })
-    //   .eq("email", email);
-    // if (!error) {
-    sendEmail(email, randomInt);
-    // refreshFunc();
-    // }
-    // }
+    if (error) {
+      console.log(error);
+    } else {
+      const { error } = await supabase
+        .from("user_data")
+        .insert({ user_index: userInt, verify_pin: secureNum, phn_no: phone })
+        .eq("email", email);
+      if (!error) {
+        // sendmail(email, randomInt);
+        refreshFunc();
+      }
+    }
   };
 
   const reject = async (email: string) => {

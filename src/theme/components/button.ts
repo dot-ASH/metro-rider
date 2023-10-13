@@ -19,13 +19,13 @@ export const buttonStyles = {
 					borderRadius: '16px'
 				}),
 				brand: (props: any) => ({
-					bg: mode('tesl', 'brand.400')(props),
+					bg: mode('teal', 'brand.400')(props),
 					color: 'white',
 					_focus: {
-						bg: mode('tesl', 'brand.400')(props)
+						bg: mode('teal', 'brand.400')(props)
 					},
 					_active: {
-						bg: mode('tesl', 'brand.400')(props)
+						bg: mode('teal', 'brand.400')(props)
 					},
 					_hover: {
 						bg: mode('brand.600', 'brand.400')(props)
@@ -46,7 +46,7 @@ export const buttonStyles = {
 				}),
 				lightBrand: (props: any) => ({
 					bg: mode('#F2EFFF', 'whiteAlpha.100')(props),
-					color: mode('tesl', 'white')(props),
+					color: mode('teal', 'white')(props),
 					_focus: {
 						bg: mode('#F2EFFF', 'whiteAlpha.100')(props)
 					},
@@ -74,7 +74,7 @@ export const buttonStyles = {
 					fontWeight: '500',
 					borderRadius: '50px',
 					bg: mode('secondaryGray.300', 'brand.400')(props),
-					color: mode('tesl', 'white')(props),
+					color: mode('teal', 'white')(props),
 					_focus: {
 						bg: mode('secondaryGray.300', 'brand.400')(props)
 					},
