@@ -1,5 +1,5 @@
-import { EmailTemplate } from "./template";
-import { Resend } from "resend";
+// import { EmailTemplate } from "./template";
+// import { Resend } from "resend";
 import axios from "axios";
 
 // const resend = new Resend(process.env.REACT_APP_RESEND_API_KEY);

@@ -15,11 +15,7 @@ export const AppRouter = () => {
     <Switch>
       <Route exact path="/" component={SignInCentered} />
       <Route path="/reg" component={UserRegistration} />
-      <Route
-        path="/admin"
-        component={AdminLayout}
-        // render={() => (hasSession ? <AdminLayout /> : <Redirect to="/" />)}
-      />
+      <Route path="/admin" component={AdminLayout} />
       <Redirect from="admin" to={hasSession ? "admin" : "/"} />
     </Switch>
   );

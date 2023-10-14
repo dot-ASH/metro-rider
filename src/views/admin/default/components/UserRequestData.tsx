@@ -27,7 +27,6 @@ import {
   MdCancel,
   MdCheckCircle,
   MdErrorOutline,
-  MdDelete,
 } from "react-icons/md";
 import { PiHourglassHighBold } from "react-icons/pi";
 import supabase from "data/supabase";
@@ -87,7 +86,7 @@ export default function ComplexTable() {
   const approve = async (email: string, phone: string) => {
     let randomInt = chance.integer({ min: 10000, max: 99999 });
     let userInt = chance.integer({ min: 100000000, max: 999999999 });
-    let secureNum = sha256HashPin(randomInt);
+    let secureNum = sha256HashPin(randomInt.toString());
 
     const { error } = await supabase
       .from("user")
@@ -318,15 +317,6 @@ export default function ComplexTable() {
             gap="0.5rem"
             onClick={() => deleteRecord(info.getValue())}
           >
-            <Icon
-              w="24px"
-              h="24px"
-              me="5px"
-              as={MdDelete}
-              color="red.500"
-              size="24"
-              ml="-1rem"
-            />
             <Text color={textColor} fontSize="sm" fontWeight="700">
               Delete
             </Text>

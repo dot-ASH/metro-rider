@@ -1,87 +1,27 @@
-/* eslint-disable */
-/*!
-  _   _  ___  ____  ___ ________  _   _   _   _ ___   
- | | | |/ _ \|  _ \|_ _|__  / _ \| \ | | | | | |_ _| 
- | |_| | | | | |_) || |  / / | | |  \| | | | | || | 
- |  _  | |_| |  _ < | | / /| |_| | |\  | | |_| || |
- |_| |_|\___/|_| \_\___/____\___/|_| \_|  \___/|___|
-                                                                                                                                                                                                                                                                                                                                       
-=========================================================
-* Horizon UI - v1.1.0
-=========================================================
-
-* Product Page: https://www.horizon-ui.com/
-* Copyright 2022 Horizon UI (https://www.horizon-ui.com/)
-
-* Designed and Coded by Simmmple
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-
-import React, { useContext, useEffect, useState } from "react";
-import { NavLink, useHistory } from "react-router-dom";
-
+import React from "react";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Heading,
-  Icon,
-  Input,
-  InputGroup,
-  InputRightElement,
   Text,
   useColorModeValue,
   Image,
   useToast,
+  FormErrorMessage,
+  Input,
 } from "@chakra-ui/react";
-// Custom components
-import { HSeparator } from "components/separator/Separator";
-import DefaultAuth from "layouts/auth/Default";
-// Assets
-import illustration from "assets/img/auth/auth.png";
-import { FcGoogle } from "react-icons/fc";
-import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { RiEyeCloseLine } from "react-icons/ri";
-import logo from "../../../assets/img/logo.png";
-import Cookies from "universal-cookie";
-import { sha256HashPin } from "../../../security/encrypt";
 import supabase from "data/supabase";
-import AuthContext from "contexts/AuthContext";
-import Chance from "chance";
+import { Field, Form, Formik } from "formik";
+import logo from "../../../assets/img/logo.png";
+import { VSeparator } from "components/separator/Separator";
 
 function SignUp() {
-  const [show, setShow] = useState<boolean>(false);
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [remember, setRemember] = useState<boolean>(false);
-  const { signin } = useContext(AuthContext);
-  const history = useHistory();
   const toast = useToast();
-  const chance = new Chance();
-
-  // Chakra color mode
   const textColor = useColorModeValue("navy.700", "white");
   const textColorSecondary = "gray.400";
-  const textColorDetails = useColorModeValue("navy.700", "secondaryGray.600");
-  const textColorBrand = useColorModeValue("teal", "white");
-  const brandStars = useColorModeValue("teal", "brand.400");
-  const googleBg = useColorModeValue("secondaryGray.300", "whiteAlpha.200");
-  const googleText = useColorModeValue("navy.700", "white");
-  const googleHover = useColorModeValue(
-    { bg: "gray.200" },
-    { bg: "whiteAlpha.300" }
-  );
-  const googleActive = useColorModeValue(
-    { bg: "secondaryGray.300" },
-    { bg: "whiteAlpha.200" }
-  );
 
   const toastText = (
     title: string,
@@ -97,32 +37,74 @@ function SignUp() {
     });
   };
 
-  const handleClick = () => setShow(!show);
-  let secretKey = chance.word({ length: 5 });
+  function validateName(value) {
+    let error;
+    if (!value) {
+      error = "Name is required";
+    }
+    return error;
+  }
 
-  const handleLogin = async () => {
-    let hashedUserInput = sha256HashPin(password + secretKey);
-    let hashedPassInput = sha256HashPin(password);
-    const { data, error } = await supabase
-      .from("admin")
-      .select("*")
-      .eq("username", username)
-      .eq("password", hashedPassInput);
+  function validateEmail(value) {
+    const EMAIL_REG = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    let error;
+    if (!value) {
+      error = "Email is required";
+    } else if (!EMAIL_REG.test(value)) {
+      error = "Enter a valid email address";
+    }
+
+    return error;
+  }
+
+  function validateNId(value) {
+    const NID_REG = /^(\d{10})$/;
+    let error;
+    if (!value) {
+      error = "NID number is required";
+    } else if (!NID_REG.test(value)) {
+      error = "Enter valid NID number";
+    }
+    return error;
+  }
+
+  function validatePhone(value) {
+    const PHONE_REG = /0[1-9](\d{9})$/;
+    const PHONE_REG_Z = /^\+880[1-9](\d{9})$/;
+    let error;
+
+    if (!value) {
+      error = "Phone number is required";
+    } else if (!PHONE_REG.test(value)) {
+      error = "Invalid phone number";
+    } else if (!PHONE_REG_Z.test(value)) {
+      error = "Region code is needed eg. +880(num)";
+    }
+    return error;
+  }
+
+  const handleReg = async (values, actions) => {
+    values.phn_no = values.phn_no.replace(/^\+/, "");
+    const { error } = await supabase.from("user").insert(values);
 
     if (error) {
-      console.log(error);
+      let erroLog = "";
+      error.message ===
+      `duplicate key value violates unique constraint "user_phn_no_key"`
+        ? (erroLog = "This phone number is already been used")
+        : (erroLog = error.message);
+      toastText("Error Creating Registration", erroLog, "error");
     } else {
-      if (data.length) {
-        let id = data[0]?.id;
-        toastText("Success", "Signing in...", "success");
-        await signin(hashedUserInput, remember, id);
-        history.push("/admin");
-      } else {
-        toastText(
-          "Check you credential",
-          "Wrong password or useranme",
-          "error"
-        );
+      toastText(
+        "Succesfully Applied",
+        "On Verification you will be notified",
+        "success"
+      );
+      actions.setSubmitting(false);
+      for (const key in values) {
+        if (values.hasOwnProperty(key)) {
+          values[key] = "";
+        }
       }
     }
   };
@@ -131,26 +113,24 @@ function SignUp() {
     <>
       <Flex w="100%" justifyContent="center" alignItems="center" h="100vh">
         <Flex
-          maxW={{ base: "100%", md: "max-content" }}
           w="100%"
-          mx={{ base: "auto" }}
           me="auto"
           alignItems="center"
           justifyContent="center"
-          mb={{ base: "30px", md: "60px" }}
-          px={{ base: "25px", md: "0px" }}
-          mt={{ base: "40px", md: "14vh" }}
+          mb={{ base: "20px", md: "30px" }}
+          px={{ base: "15px", md: "0px" }}
+          mt={{ base: "20px", md: "8vh" }}
           flexDirection="column"
         >
-          <Image src={logo} width="100px" my="3rem" mt="-3rem" />
-          <Box me="auto" w="100%">
+          <Image src={logo} width="100px" />
+          <Box me="auto" w="100%" m="2rem">
             <Heading
               color={textColor}
               fontSize="36px"
               mb="10px"
               textAlign="center"
             >
-              Sign In
+              Apply for registraion
             </Heading>
             <Text
               textAlign="center"
@@ -160,107 +140,122 @@ function SignUp() {
               fontWeight="400"
               fontSize="md"
             >
-              Enter your email and password to sign up!
+              Enter inforamtion asccordingly to apply!
             </Text>
           </Box>
-          <Flex
-            zIndex="2"
-            direction="column"
-            w={{ base: "100%", md: "420px" }}
-            maxW="100%"
-            background="transparent"
-            borderRadius="15px"
-            mx={{ base: "auto", lg: "unset" }}
-            me="auto"
-            mb={{ base: "20px", md: "auto" }}
+          <Formik
+            initialValues={{ name: "", email: "", nid: "", phn_no: "" }}
+            onSubmit={(values, actions) => handleReg(values, actions)}
+            width="100%"
           >
-            <FormControl>
-              <FormLabel
-                display="flex"
-                ms="4px"
-                fontSize="sm"
-                fontWeight="500"
-                color={textColor}
-                mb="8px"
+            {(props) => (
+              <Form
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  gap: "3rem",
+                }}
               >
-                Username<Text color={brandStars}>*</Text>
-              </FormLabel>
-              <Input
-                isRequired={true}
-                variant="auth"
-                fontSize="sm"
-                ms={{ base: "0px", md: "0px" }}
-                type="email"
-                placeholder="mail@simmmple.com"
-                mb="24px"
-                fontWeight="500"
-                size="lg"
-                onChange={(event) => setUsername(event.target.value)}
-                required
-              />
-              <FormLabel
-                ms="4px"
-                fontSize="sm"
-                fontWeight="500"
-                color={textColor}
-                display="flex"
-              >
-                Password<Text color={brandStars}>*</Text>
-              </FormLabel>
-              <InputGroup size="md">
-                <Input
-                  isRequired={true}
-                  fontSize="sm"
-                  placeholder="Min. 8 characters"
-                  mb="24px"
-                  size="lg"
-                  type={show ? "text" : "password"}
-                  onChange={(event) => setPassword(event.target.value)}
-                  variant="auth"
-                  required
-                />
-                <InputRightElement display="flex" alignItems="center" mt="4px">
-                  <Icon
-                    color={textColorSecondary}
-                    _hover={{ cursor: "pointer" }}
-                    as={show ? RiEyeCloseLine : MdOutlineRemoveRedEye}
-                    onClick={handleClick}
-                  />
-                </InputRightElement>
-              </InputGroup>
-              <Flex justifyContent="space-between" align="center" mb="24px">
-                <FormControl display="flex" alignItems="center">
-                  <Checkbox
-                    id="remember-login"
-                    colorScheme="brandScheme"
-                    me="10px"
-                    onChange={() => setRemember((prev) => !prev)}
-                  />
-                  <FormLabel
-                    htmlFor="remember-login"
-                    mb="0"
-                    fontWeight="normal"
-                    color={textColor}
-                    fontSize="sm"
+                <Flex flexDirection="row" gap={{ base: "2rem", md: "5rem" }}>
+                  <Flex
+                    flexDirection="column"
+                    gap="2rem"
+                    w={{ base: "200px", md: "300px" }}
                   >
-                    Keep me logged in
-                  </FormLabel>
-                </FormControl>
-              </Flex>
-              <Button
-                colorScheme="teal"
-                variant="solid"
-                fontSize="sm"
-                fontWeight="500"
-                w="100%"
-                h="50"
-                mb="24px"
-                onClick={() => handleLogin()}
-              >
-                Sign In
-              </Button>
-            </FormControl>
-          </Flex>
+                    <Field name="name" validate={validateName}>
+                      {({ field, form }) => (
+                        <FormControl
+                          isInvalid={form.errors.name && form.touched.name}
+                          isRequired
+                        >
+                          <FormLabel>First name</FormLabel>
+                          <Input
+                            {...field}
+                            placeholder="name"
+                            size="md"
+                            variant="flushed"
+                          />
+                          <FormErrorMessage>
+                            {form.errors.name}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="email" validate={validateEmail}>
+                      {({ field, form }) => (
+                        <FormControl
+                          isInvalid={form.errors.email && form.touched.email}
+                          isRequired
+                        >
+                          <FormLabel>Your Email</FormLabel>
+                          <Input
+                            {...field}
+                            placeholder="email"
+                            variant="flushed"
+                          />
+                          <FormErrorMessage>
+                            {form.errors.email}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                  </Flex>
+                  <VSeparator opacity />
+                  <Flex
+                    flexDirection="column"
+                    gap="2rem"
+                    w={{ base: "200px", md: "250px" }}
+                  >
+                    <Field name="nid" validate={validateNId}>
+                      {({ field, form }) => (
+                        <FormControl
+                          isInvalid={form.errors.nid && form.touched.nid}
+                          isRequired
+                        >
+                          <FormLabel>NID Number</FormLabel>
+                          <Input
+                            {...field}
+                            placeholder="nid"
+                            variant="flushed"
+                          />
+                          <FormErrorMessage>{form.errors.nid}</FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+
+                    <Field name="phn_no" validate={validatePhone}>
+                      {({ field, form }) => (
+                        <FormControl
+                          isInvalid={form.errors.phn_no && form.touched.phn_no}
+                          isRequired
+                        >
+                          <FormLabel>Phone Number</FormLabel>
+                          <Input
+                            {...field}
+                            placeholder="eg. +8801963606880"
+                            variant="flushed"
+                          />
+                          <FormErrorMessage>
+                            {form.errors.phn_no}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                  </Flex>
+                </Flex>
+                <Button
+                  alignSelf="center"
+                  mt={4}
+                  colorScheme="teal"
+                  isLoading={props.isSubmitting}
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              </Form>
+            )}
+          </Formik>
         </Flex>
       </Flex>
     </>

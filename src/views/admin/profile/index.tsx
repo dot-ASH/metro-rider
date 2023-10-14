@@ -27,10 +27,8 @@ import AuthContext from "contexts/AuthContext";
 
 // Custom components
 import Banner from "views/admin/profile/components/Banner";
-import General from 'views/admin/profile/components/General';
 // import Notifications from 'views/admin/profile/components/Notifications';
 // import Projects from 'views/admin/profile/components/Projects';
-import Storage from 'views/admin/profile/components/Storage';
 // import Upload from 'views/admin/profile/components/Upload';
 
 // Assets

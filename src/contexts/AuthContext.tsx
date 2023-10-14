@@ -20,7 +20,11 @@ interface AuthContextType {
   hasSession: boolean;
   setSession: (hasSession: boolean) => void;
   signout: () => void;
-  signin: (hashedUserInput: string, remember: boolean) => void;
+  signin: (
+    hashedUserInput: string,
+    remember: boolean,
+    id: number
+  ) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,7 +33,9 @@ const AuthContext = createContext<AuthContextType>({
   hasSession: false,
   setSession: () => {},
   signout: () => {},
-  signin: () => {},
+  signin: async () => {
+    return Promise.resolve();
+  },
 });
 
 interface AuthProviderProps {
@@ -71,12 +77,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     hashedUserInput: string,
     remember: boolean,
     id: number
-  ): void => {
+  ): Promise<void> => {
     const { error } = await supabase
       .from("Auth")
       .insert({ token: hashedUserInput, id: id });
     if (error) {
-      throw new Error(error);
+      throw new Error(error.message);
     }
     var expiryDate = new Date();
     expiryDate.setMonth(expiryDate.getMonth() + 1);
@@ -95,7 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       .delete()
       .eq("token", hasCookie);
     if (error) {
-      throw new Error(error);
+      throw new Error(error.message);
     }
     cookies.remove("token", { path: "/" });
     setAdmin([]);
