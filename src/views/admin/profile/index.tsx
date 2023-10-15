@@ -21,9 +21,10 @@
 */
 
 // Chakra imports
-import { Box, Grid } from "@chakra-ui/react";
+import { Box, Grid, GridItem, Text, useColorModeValue } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import AuthContext from "contexts/AuthContext";
+import Card from "components/card/Card";
 
 // Custom components
 import Banner from "views/admin/profile/components/Banner";
@@ -34,9 +35,11 @@ import Banner from "views/admin/profile/components/Banner";
 // Assets
 import banner from "assets/img/auth/banner.png";
 import avatar from "assets/img/nfts/Nft4.png";
+import { HSeparator } from "components/separator/Separator";
 
 export default function Overview() {
   const { admin } = useContext(AuthContext);
+  const textColor = useColorModeValue("secondaryGray.900", "white");
   return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
       {/* Main Fields */}
@@ -52,21 +55,30 @@ export default function Overview() {
         gap={{ base: "20px", xl: "20px" }}
       >
         <Banner
-          gridArea="1 / 1 / 2 / 2"
           banner={banner}
           avatar={avatar}
           name={admin[0]?.name}
-          job={
+          position={
             admin[0]?.position === "sys_admin"
               ? "System Administrator"
               : "Admin"
           }
-          posts="17"
-          followers="9.7k"
-          following="274"
         />
-	
+        <GridItem colSpan={2} flexGrow={1}>
+          <Card bg="white" rounded={"15px"} h="95%">
+            <Text
+              color={textColor}
+              fontSize="22px"
+              fontWeight="700"
+              lineHeight="100%"
+            >
+              Tasks
+            </Text>
+            <HSeparator my={"1rem"}/>
+          </Card>
+        </GridItem>
       </Grid>
+
       {/* <Grid
 				mb='20px'
 				templateColumns={{

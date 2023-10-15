@@ -68,7 +68,7 @@ export default function ComplexTable() {
     return formattedDate;
   };
 
-  const unBLocked = async (user_index) => {
+  const unBLocked = async (user_index: number) => {
     const { error } = await supabase
       .from("suspend")
       .delete()
@@ -198,7 +198,7 @@ export default function ComplexTable() {
         </Text>
         <Menu />
       </Flex>
-      <Box>
+      <Box maxHeight={"330px"}>
         {table.getRowModel().rows.length > 0 ? (
           <Table variant="simple" color="gray.500" mb="24px" mt="12px">
             <Thead>

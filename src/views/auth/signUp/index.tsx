@@ -37,7 +37,7 @@ function SignUp() {
     });
   };
 
-  function validateName(value) {
+  function validateName(value: string) {
     let error;
     if (!value) {
       error = "Name is required";
@@ -45,7 +45,7 @@ function SignUp() {
     return error;
   }
 
-  function validateEmail(value) {
+  function validateEmail(value: string) {
     const EMAIL_REG = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     let error;
     if (!value) {
@@ -57,7 +57,7 @@ function SignUp() {
     return error;
   }
 
-  function validateNId(value) {
+  function validateNId(value: string) {
     const NID_REG = /^(\d{10})$/;
     let error;
     if (!value) {
@@ -68,7 +68,7 @@ function SignUp() {
     return error;
   }
 
-  function validatePhone(value) {
+  function validatePhone(value: string) {
     const PHONE_REG = /0[1-9](\d{9})$/;
     const PHONE_REG_Z = /^\+880[1-9](\d{9})$/;
     let error;
@@ -83,7 +83,7 @@ function SignUp() {
     return error;
   }
 
-  const handleReg = async (values, actions) => {
+  const handleReg = async (values: any, actions: any) => {
     values.phn_no = values.phn_no.replace(/^\+/, "");
     const { error } = await supabase.from("user").insert(values);
 
@@ -97,7 +97,7 @@ function SignUp() {
     } else {
       toastText(
         "Succesfully Applied",
-        "On Verification you will be notified",
+        "Up on Verification, you will be notified",
         "success"
       );
       actions.setSubmitting(false);
@@ -146,7 +146,6 @@ function SignUp() {
           <Formik
             initialValues={{ name: "", email: "", nid: "", phn_no: "" }}
             onSubmit={(values, actions) => handleReg(values, actions)}
-            width="100%"
           >
             {(props) => (
               <Form
@@ -164,7 +163,7 @@ function SignUp() {
                     w={{ base: "200px", md: "300px" }}
                   >
                     <Field name="name" validate={validateName}>
-                      {({ field, form }) => (
+                      {({ field, form }: any) => (
                         <FormControl
                           isInvalid={form.errors.name && form.touched.name}
                           isRequired
@@ -183,7 +182,7 @@ function SignUp() {
                       )}
                     </Field>
                     <Field name="email" validate={validateEmail}>
-                      {({ field, form }) => (
+                      {({ field, form }: any) => (
                         <FormControl
                           isInvalid={form.errors.email && form.touched.email}
                           isRequired
@@ -208,7 +207,7 @@ function SignUp() {
                     w={{ base: "200px", md: "250px" }}
                   >
                     <Field name="nid" validate={validateNId}>
-                      {({ field, form }) => (
+                      {({ field, form }: any) => (
                         <FormControl
                           isInvalid={form.errors.nid && form.touched.nid}
                           isRequired
@@ -225,7 +224,7 @@ function SignUp() {
                     </Field>
 
                     <Field name="phn_no" validate={validatePhone}>
-                      {({ field, form }) => (
+                      {({ field, form }: any) => (
                         <FormControl
                           isInvalid={form.errors.phn_no && form.touched.phn_no}
                           isRequired

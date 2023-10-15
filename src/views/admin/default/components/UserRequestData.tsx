@@ -26,6 +26,7 @@ import { useState, useEffect } from "react";
 import {
   MdCancel,
   MdCheckCircle,
+  MdDelete,
   MdErrorOutline,
 } from "react-icons/md";
 import { PiHourglassHighBold } from "react-icons/pi";
@@ -222,7 +223,7 @@ export default function ComplexTable() {
                 ? "orange.500"
                 : info.getValue() === "rejected"
                 ? "red.500"
-                : null
+                : undefined
             }
             as={
               info.getValue() === "approved"
@@ -231,7 +232,7 @@ export default function ComplexTable() {
                 ? PiHourglassHighBold
                 : info.getValue() === "rejected"
                 ? MdErrorOutline
-                : null
+                : undefined
             }
           />
           <Text color={textColor} fontSize="sm" fontWeight="700">
@@ -316,7 +317,16 @@ export default function ComplexTable() {
             variant="ghost"
             gap="0.5rem"
             onClick={() => deleteRecord(info.getValue())}
+            ml="-1rem"
           >
+            <Icon
+              w="24px"
+              h="24px"
+              me="5px"
+              as={MdDelete}
+              color="red.500"
+              size="24"
+            />
             <Text color={textColor} fontSize="sm" fontWeight="700">
               Delete
             </Text>
@@ -347,6 +357,8 @@ export default function ComplexTable() {
       w="100%"
       px="0px"
       overflowX={{ sm: "scroll", lg: "hidden" }}
+      // maxHeight={"400px"}
+      mt="10"
     >
       <Flex px="25px" mb="8px" justifyContent="space-between" align="center">
         <Text
@@ -359,7 +371,7 @@ export default function ComplexTable() {
         </Text>
         <Menu />
       </Flex>
-      <Box>
+      <Box maxHeight={"330px"}>
         {table.getRowModel().rows.length > 0 ? (
           <Table variant="simple" color="gray.500" mb="24px" mt="12px">
             <Thead>
