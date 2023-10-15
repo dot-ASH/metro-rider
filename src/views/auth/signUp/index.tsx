@@ -111,24 +111,27 @@ function SignUp() {
 
   return (
     <>
-      <Flex w="100%" justifyContent="center" alignItems="center" h="100vh">
+      <Flex
+        w="100%"
+        justifyContent="center"
+        alignItems="center"
+        h="100vh "
+        py={{ base: "10px", md: "0px" }}
+      >
         <Flex
-          w="100%"
-          me="auto"
+          h="95%"
           alignItems="center"
           justifyContent="center"
-          mb={{ base: "20px", md: "30px" }}
-          px={{ base: "15px", md: "0px" }}
-          mt={{ base: "20px", md: "8vh" }}
           flexDirection="column"
+          gap={{ base: "0", md: "3" }}
         >
-          <Image src={logo} width="100px" />
-          <Box me="auto" w="100%" m="2rem">
+          <Image src={logo} width={{ base: "80px", md: "100px" }} />
+          <Box me="auto" w="100%" m="2rem" mb={{ base: "0", md: "3" }}>
             <Heading
               color={textColor}
-              fontSize="36px"
-              mb="10px"
+              fontSize={{ base: "28px", md: "36px" }}
               textAlign="center"
+              mb={"1rem"}
             >
               Apply for registraion
             </Heading>
@@ -138,7 +141,7 @@ function SignUp() {
               ms="4px"
               color={textColorSecondary}
               fontWeight="400"
-              fontSize="md"
+              fontSize={{ base: "sm", md: "md" }}
             >
               Enter inforamtion asccordingly to apply!
             </Text>
@@ -153,22 +156,21 @@ function SignUp() {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
-                  gap: "3rem",
+                  gap: "2rem",
                 }}
               >
-                <Flex flexDirection="row" gap={{ base: "2rem", md: "5rem" }}>
-                  <Flex
-                    flexDirection="column"
-                    gap="2rem"
-                    w={{ base: "200px", md: "300px" }}
-                  >
+                <Flex
+                  flexDirection={{ base: "column", md: "row" }}
+                  gap={{ base: "1rem", md: "5rem" }}
+                >
+                  <Flex flexDirection="column" gap="2rem" w="300px">
                     <Field name="name" validate={validateName}>
                       {({ field, form }: any) => (
                         <FormControl
                           isInvalid={form.errors.name && form.touched.name}
                           isRequired
                         >
-                          <FormLabel>First name</FormLabel>
+                          <FormLabel>Your Full Name</FormLabel>
                           <Input
                             {...field}
                             placeholder="name"
@@ -200,12 +202,8 @@ function SignUp() {
                       )}
                     </Field>
                   </Flex>
-                  <VSeparator opacity />
-                  <Flex
-                    flexDirection="column"
-                    gap="2rem"
-                    w={{ base: "200px", md: "250px" }}
-                  >
+                  <VSeparator />
+                  <Flex flexDirection="column" gap="2rem" w="300px">
                     <Field name="nid" validate={validateNId}>
                       {({ field, form }: any) => (
                         <FormControl

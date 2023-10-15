@@ -11,6 +11,7 @@ import {
   Tr,
   useColorModeValue,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import {
   createColumnHelper,
@@ -34,7 +35,7 @@ import supabase from "data/supabase";
 import moment from "moment";
 import Chance from "chance";
 import { sha256HashPin } from "security/encrypt";
-// import sendmail from "data/sendmail";
+import sendmail from "data/sendmail";
 
 type RowObj = {
   name: string;
@@ -55,6 +56,21 @@ export default function ComplexTable() {
   const columnHelper = createColumnHelper<RowObj>();
   // const RESEND_KEY = process.env.REACT_APP_RESEND_API_KEY;
   const chance = new Chance();
+  const toast = useToast();
+
+  const toastText = (
+    title: string,
+    description: string,
+    status: "info" | "warning" | "success" | "error"
+  ) => {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      duration: 6000,
+      isClosable: true,
+    });
+  };
 
   async function fetchReq() {
     try {
@@ -106,7 +122,12 @@ export default function ComplexTable() {
         .insert({ user_index: userInt, verify_pin: secureNum, phn_no: phone })
         .eq("email", email);
       if (!error) {
-        // sendmail(email, randomInt);
+        sendmail({ email: email, pin: String(randomInt) });
+        toastText(
+          "Request accepted",
+          `You have accepted the user: #${userInt}'s registration`,
+          "success"
+        );
         refreshFunc();
       }
     }
@@ -223,7 +244,7 @@ export default function ComplexTable() {
                 ? "orange.500"
                 : info.getValue() === "rejected"
                 ? "red.500"
-                : undefined
+                : null
             }
             as={
               info.getValue() === "approved"
@@ -232,7 +253,7 @@ export default function ComplexTable() {
                 ? PiHourglassHighBold
                 : info.getValue() === "rejected"
                 ? MdErrorOutline
-                : undefined
+                : null
             }
           />
           <Text color={textColor} fontSize="sm" fontWeight="700">
