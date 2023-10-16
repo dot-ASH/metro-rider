@@ -47,7 +47,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
   const history = useHistory();
   const signOut = () => {
     signout();
-    history.push("/auth");
+    history.push("/");
   };
 
   console.log(admin);

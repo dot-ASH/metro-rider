@@ -89,7 +89,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     cookies.set("token", hashedUserInput, {
       path: "/",
       expires: remember ? expiryDate : null,
-      domain: "localhost",
+      domain: window.location.hostname,
       sameSite: "lax",
     });
     setSession(true);
@@ -107,8 +107,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAdmin([]);
     setSession(false);
   };
-
-  // console.log(admin);
 
   return (
     <AuthContext.Provider

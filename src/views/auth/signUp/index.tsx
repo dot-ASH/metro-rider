@@ -7,7 +7,6 @@ import {
   FormLabel,
   Heading,
   Text,
-  useColorModeValue,
   Image,
   useToast,
   FormErrorMessage,
@@ -20,8 +19,8 @@ import { VSeparator } from "components/separator/Separator";
 
 function SignUp() {
   const toast = useToast();
-  const textColor = useColorModeValue("navy.700", "white");
-  const textColorSecondary = "gray.400";
+  const textColor = "#322E2F";
+  const textColorSecondary = "#938585";
 
   const toastText = (
     title: string,
@@ -68,6 +67,11 @@ function SignUp() {
     return error;
   }
 
+  const onFocus = {
+    borderColor: "teal",
+    boxShadow: "0px 1px 0px 0px teal",
+  };
+
   function validatePhone(value: string) {
     const PHONE_REG = /0[1-9](\d{9})$/;
     const PHONE_REG_Z = /^\+880[1-9](\d{9})$/;
@@ -110,152 +114,219 @@ function SignUp() {
   };
 
   return (
-    <>
+    <Flex
+      w="100%"
+      justifyContent="center"
+      alignItems="center"
+      h="100vh "
+      bg={"#f6f2ef"}
+      mt={{ base: "2", md: "0" }}
+    >
       <Flex
-        w="100%"
-        justifyContent="center"
+        h="95%"
         alignItems="center"
-        h="100vh "
-        py={{ base: "10px", md: "0px" }}
+        justifyContent="center"
+        flexDirection="column"
+        gap={{ base: "0", md: "5" }}
       >
-        <Flex
-          h="95%"
-          alignItems="center"
-          justifyContent="center"
-          flexDirection="column"
-          gap={{ base: "0", md: "3" }}
-        >
-          <Image src={logo} width={{ base: "80px", md: "100px" }} />
-          <Box me="auto" w="100%" m="2rem" mb={{ base: "0", md: "3" }}>
-            <Heading
-              color={textColor}
-              fontSize={{ base: "28px", md: "36px" }}
-              textAlign="center"
-              mb={"1rem"}
-            >
-              Apply for registraion
-            </Heading>
-            <Text
-              textAlign="center"
-              mb="36px"
-              ms="4px"
-              color={textColorSecondary}
-              fontWeight="400"
-              fontSize={{ base: "sm", md: "md" }}
-            >
-              Enter inforamtion asccordingly to apply!
-            </Text>
-          </Box>
-          <Formik
-            initialValues={{ name: "", email: "", nid: "", phn_no: "" }}
-            onSubmit={(values, actions) => handleReg(values, actions)}
+        <Image src={logo} width={{ base: "80px", md: "100px" }} />
+        <Box me="auto" w="100%" m="1.3rem" mb={{ base: "3", md: "3" }}>
+          <Heading
+            color={textColor}
+            fontSize={{ base: "32px", md: "36px" }}
+            textAlign="center"
+            mb={"1.5rem"}
+            fontFamily="'Bree Serif', serif"
           >
-            {(props) => (
-              <Form
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  gap: "2rem",
-                }}
+            Apply for registraion
+          </Heading>
+          <Text
+            textAlign="center"
+            mb="36px"
+            ms="4px"
+            color={textColorSecondary}
+            fontWeight="400"
+            fontSize={{ md: "md" }}
+            fontFamily="'Vollkorn', serif"
+          >
+            Enter inforamtion acccordingly to apply!
+          </Text>
+        </Box>
+        <Formik
+          initialValues={{ name: "", email: "", nid: "", phn_no: "" }}
+          onSubmit={(values, actions) => handleReg(values, actions)}
+        >
+          {(props) => (
+            <Form
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: "1.5rem",
+                width: "100%",
+              }}
+            >
+              <Flex
+                flexDirection={{ base: "column", md: "row" }}
+                gap={{ base: "0.5rem", md: "5rem" }}
+                width="100%"
+                my={{ md: "1rem" }}
               >
                 <Flex
-                  flexDirection={{ base: "column", md: "row" }}
-                  gap={{ base: "1rem", md: "5rem" }}
+                  flexDirection="column"
+                  maxW="350px"
+                  gap={{ base: "2rem", md: "3rem" }}
+                  w={{ md: "320px", lg: "350px" }}
                 >
-                  <Flex flexDirection="column" gap="2rem" w="300px">
-                    <Field name="name" validate={validateName}>
-                      {({ field, form }: any) => (
-                        <FormControl
-                          isInvalid={form.errors.name && form.touched.name}
-                          isRequired
+                  <Field name="name" validate={validateName}>
+                    {({ field, form }: any) => (
+                      <FormControl
+                        isInvalid={form.errors.name && form.touched.name}
+                        isRequired
+                      >
+                        <FormLabel
+                          color={textColor}
+                          fontFamily={"'Vollkorn SC', serif"}
+                          fontWeight={500}
                         >
-                          <FormLabel>Your Full Name</FormLabel>
-                          <Input
-                            {...field}
-                            placeholder="name"
-                            size="md"
-                            variant="flushed"
-                          />
-                          <FormErrorMessage>
-                            {form.errors.name}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                    <Field name="email" validate={validateEmail}>
-                      {({ field, form }: any) => (
-                        <FormControl
-                          isInvalid={form.errors.email && form.touched.email}
-                          isRequired
+                          Your Full Name
+                        </FormLabel>
+                        <Input
+                          {...field}
+                          placeholder="Your name. e.g. Sakir Ashker"
+                          size="md"
+                          variant="flushed"
+                          _placeholder={{ color: textColorSecondary }}
+                          fontFamily="'Vollkorn', serif"
+                          _focus={onFocus}
+                        />
+                        <FormErrorMessage
+                          fontFamily={"'Vollkorn SC', serif"}
+                          fontSize={12}
                         >
-                          <FormLabel>Your Email</FormLabel>
-                          <Input
-                            {...field}
-                            placeholder="email"
-                            variant="flushed"
-                          />
-                          <FormErrorMessage>
-                            {form.errors.email}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                  </Flex>
-                  <VSeparator />
-                  <Flex flexDirection="column" gap="2rem" w="300px">
-                    <Field name="nid" validate={validateNId}>
-                      {({ field, form }: any) => (
-                        <FormControl
-                          isInvalid={form.errors.nid && form.touched.nid}
-                          isRequired
+                          {form.errors.name}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="email" validate={validateEmail}>
+                    {({ field, form }: any) => (
+                      <FormControl
+                        isInvalid={form.errors.email && form.touched.email}
+                        isRequired
+                      >
+                        <FormLabel
+                          color={textColor}
+                          fontFamily="'Vollkorn SC', serif"
                         >
-                          <FormLabel>NID Number</FormLabel>
-                          <Input
-                            {...field}
-                            placeholder="nid"
-                            variant="flushed"
-                          />
-                          <FormErrorMessage>{form.errors.nid}</FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-
-                    <Field name="phn_no" validate={validatePhone}>
-                      {({ field, form }: any) => (
-                        <FormControl
-                          isInvalid={form.errors.phn_no && form.touched.phn_no}
-                          isRequired
+                          Your Email
+                        </FormLabel>
+                        <Input
+                          {...field}
+                          placeholder="Your email. e.g. nafees@gmail.com"
+                          variant="flushed"
+                          _placeholder={{ color: textColorSecondary }}
+                          fontFamily="'Vollkorn', serif"
+                          _focus={onFocus}
+                        />
+                        <FormErrorMessage
+                          fontFamily={"'Vollkorn SC', serif"}
+                          fontSize={12}
                         >
-                          <FormLabel>Phone Number</FormLabel>
-                          <Input
-                            {...field}
-                            placeholder="eg. +8801963606880"
-                            variant="flushed"
-                          />
-                          <FormErrorMessage>
-                            {form.errors.phn_no}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                  </Flex>
+                          {form.errors.email}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
                 </Flex>
-                <Button
-                  alignSelf="center"
-                  mt={4}
-                  colorScheme="teal"
-                  isLoading={props.isSubmitting}
-                  type="submit"
+                <VSeparator />
+                <Flex
+                  flexDirection="column"
+                  gap={{ base: "2rem", md: "3rem" }}
+                  maxW="350px"
+                  w={{ md: "320px", lg: "350px" }}
                 >
-                  Submit
-                </Button>
-              </Form>
-            )}
-          </Formik>
-        </Flex>
+                  <Field name="nid" validate={validateNId}>
+                    {({ field, form }: any) => (
+                      <FormControl
+                        isInvalid={form.errors.nid && form.touched.nid}
+                        isRequired
+                      >
+                        <FormLabel
+                          color={textColor}
+                          fontFamily="'Vollkorn SC', serif"
+                        >
+                          NID Number
+                        </FormLabel>
+                        <Input
+                          {...field}
+                          placeholder="you valid nid number!"
+                          variant="flushed"
+                          _placeholder={{ color: textColorSecondary }}
+                          fontFamily="'Vollkorn', serif"
+                          _focus={onFocus}
+                        />
+                        <FormErrorMessage
+                          fontFamily={"'Vollkorn SC', serif"}
+                          fontSize={12}
+                        >
+                          {form.errors.nid}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+
+                  <Field name="phn_no" validate={validatePhone}>
+                    {({ field, form }: any) => (
+                      <FormControl
+                        isInvalid={form.errors.phn_no && form.touched.phn_no}
+                        isRequired
+                      >
+                        <FormLabel
+                          color={textColor}
+                          fontFamily="'Vollkorn SC', serif"
+                        >
+                          Phone Number
+                        </FormLabel>
+                        <Input
+                          {...field}
+                          placeholder="eg. +8801963606880"
+                          variant="flushed"
+                          _placeholder={{ color: textColorSecondary }}
+                          fontFamily="'Vollkorn', serif"
+                          _focus={onFocus}
+                        />
+                        <FormErrorMessage
+                          fontFamily={"'Vollkorn SC', serif"}
+                          fontSize={12}
+                        >
+                          {form.errors.phn_no}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                </Flex>
+              </Flex>
+              <Button
+                alignSelf="center"
+                mt={8}
+                bg={"#322E2F"}
+                isLoading={props.isSubmitting}
+                type="submit"
+                rounded={8}
+                fontFamily="'Bree Serif', serif"
+                color={"#f6f2ef"}
+                borderWidth={0.1}
+                borderColor={"teal"}
+                _hover={{ bg: "#d9d4cf", color: "teal" }}
+              >
+                Submit
+              </Button>
+            </Form>
+          )}
+        </Formik>
       </Flex>
-    </>
+    </Flex>
   );
 }
 
