@@ -10,6 +10,8 @@ import {
   Tr,
   useColorModeValue,
   Button,
+  Input,
+  useToast,
 } from "@chakra-ui/react";
 import {
   createColumnHelper,
@@ -21,7 +23,6 @@ import {
 } from "@tanstack/react-table";
 // Custom components
 import Card from "components/card/Card";
-import Menu from "components/menu/MainMenu";
 import { useState, useEffect } from "react";
 // Assets
 import supabase from "data/supabase";
@@ -33,6 +34,11 @@ type RowObj = {
   created_at: string;
 };
 
+type BlockData = {
+  user_index?: string;
+  reason?: string;
+};
+
 export default function ComplexTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [tableData, setTableData] = useState<RowObj[]>([]);
@@ -40,6 +46,25 @@ export default function ComplexTable() {
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
   const columnHelper = createColumnHelper<RowObj>();
+  const [blockData, setBlockData] = useState<BlockData>({
+    user_index: "",
+    reason: "",
+  });
+  const toast = useToast();
+
+  const toastText = (
+    title: string,
+    description: string,
+    status: "info" | "warning" | "success" | "error"
+  ) => {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      duration: 6000,
+      isClosable: true,
+    });
+  };
 
   async function fetchSuspend() {
     try {
@@ -154,10 +179,10 @@ export default function ComplexTable() {
         <Button
           variant="ghost"
           onClick={() => unBLocked(info.getValue())}
-          ml='-1rem'
+          ml="-1rem"
         >
           <Text color="#d74a49" fontSize="md" fontWeight="700">
-            Delete
+            unblock
           </Text>
         </Button>
       ),
@@ -180,12 +205,51 @@ export default function ComplexTable() {
     setData(tableData);
   }, [tableData]);
 
+  const blockEm = async () => {
+    const USER_REG = /^\d{9}$/;
+    let error = "";
+    if (
+      !blockData.user_index ||
+      !USER_REG.test(blockData.user_index.toString())
+    ) {
+      error = "Invalid User Index";
+    } else if (!blockData.reason) {
+      error = "Give a Reason";
+    }
+
+    if (error) {
+      toastText("You have error", error, "error");
+    } else {
+      const respose = await supabase
+        .from("suspend")
+        .insert({ user_index: blockData.user_index, reason: blockData.reason });
+      if (respose.error) {
+        if (respose.error.message.includes("violates foreign key constraint")) {
+          toastText("You have error", "No user on that user_index", "warning");
+        } else if (respose.error.message.includes("duplicate")) {
+          toastText("You have error", "He/She is already blocked", "error");
+        } else {
+          toastText("You have error", respose.error.message, "error");
+        }
+      } else {
+        setBlockData({ user_index: "", reason: "" });
+        toastText(
+          "Suspension successful",
+          `user${blockData.user_index} is blocked`,
+          "info"
+        );
+        refreshFunc();
+      }
+    }
+  };
+
   return (
     <Card
       flexDirection="column"
       w="100%"
       px="0px"
       overflowX={{ sm: "scroll", lg: "hidden" }}
+      minHeight={300}
     >
       <Flex px="25px" mb="8px" justifyContent="space-between" align="center">
         <Text
@@ -196,9 +260,15 @@ export default function ComplexTable() {
         >
           Suspended User
         </Text>
-        <Menu />
       </Flex>
-      <Box maxHeight={"330px"}>
+      <Box
+        maxHeight={300}
+        width={"100%"}
+        overflow={"scroll"}
+        display="flex"
+        flexDirection={"column"}
+        gap={50}
+      >
         {table.getRowModel().rows.length > 0 ? (
           <Table variant="simple" color="gray.500" mb="24px" mt="12px">
             <Thead>
@@ -236,30 +306,27 @@ export default function ComplexTable() {
               ))}
             </Thead>
             <Tbody>
-              {table
-                .getRowModel()
-                .rows
-                .map((row) => {
-                  return (
-                    <Tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <Td
-                            key={cell.id}
-                            fontSize={{ sm: "14px" }}
-                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
-                            borderColor="transparent"
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </Td>
-                        );
-                      })}
-                    </Tr>
-                  );
-                })}
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <Tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <Td
+                          key={cell.id}
+                          fontSize={{ sm: "14px" }}
+                          minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                          borderColor="transparent"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </Td>
+                      );
+                    })}
+                  </Tr>
+                );
+              })}
             </Tbody>
           </Table>
         ) : (
@@ -268,6 +335,56 @@ export default function ComplexTable() {
           </Flex>
         )}
       </Box>
+      <Flex
+        position={"absolute"}
+        bottom={0}
+        w={"100%"}
+        px={5}
+        py={3}
+        boxShadow={"0px 7px 10px teal"}
+        bg={"whiteAlpha"}
+        rounded={10}
+      >
+        <Flex gap={"1rem"} alignItems={"center"}>
+          <Text minW={20}>User Index:</Text>
+          <Input
+            required
+            type={"number"}
+            focusBorderColor={"#78938a"}
+            width={"70%"}
+            p={1}
+            value={blockData.user_index}
+            onChange={(event) =>
+              setBlockData({
+                user_index: event.target.value,
+                reason: blockData?.reason,
+              })
+            }
+          />
+          <label>Reason:</label>
+          <Input
+            required
+            focusBorderColor={"#78938a"}
+            p={1}
+            value={blockData.reason}
+            onChange={(event) =>
+              setBlockData({
+                user_index: blockData?.user_index,
+                reason: event.target.value,
+              })
+            }
+          />
+          <Button
+            variant={"outline"}
+            px={8}
+            rounded={10}
+            colorScheme={"teal"}
+            onClick={blockEm}
+          >
+            Block
+          </Button>
+        </Flex>
+      </Flex>
     </Card>
   );
 }

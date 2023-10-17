@@ -120,7 +120,6 @@ function SignUp() {
       alignItems="center"
       h="100vh "
       bg={"#f6f2ef"}
-      mt={{ base: "2", md: "0" }}
     >
       <Flex
         h="95%"
@@ -168,7 +167,7 @@ function SignUp() {
             >
               <Flex
                 flexDirection={{ base: "column", md: "row" }}
-                gap={{ base: "0.5rem", md: "5rem" }}
+                gap={{ base: "1rem", md: "5rem" }}
                 width="100%"
                 my={{ md: "1rem" }}
               >

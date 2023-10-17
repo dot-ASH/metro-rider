@@ -6,7 +6,7 @@ import {
   //   Icon,
   //   Select,
   SimpleGrid,
-  //   useColorModeValue,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 // import Usa from 'assets/img/dashboards/usa.png';
@@ -29,9 +29,9 @@ import UserSuspendData from "views/admin/default/components/UserSuspendData";
 export default function UserReports() {
   // Chakra Color Mode
   //   const brandColor = useColorModeValue("teal", "white");
-  //   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
+  const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
   return (
-    <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
+    <Box pt={{ base: "130px", md: "80px", xl: "80px" }} bg={boxBg}>
       <SimpleGrid columns={{ base: 1, md: 1, xl: 1 }} gap="20px" mb="20px">
         <UserRequestData />
       </SimpleGrid>
