@@ -100,12 +100,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       .from("Auth")
       .delete()
       .eq("token", hasCookie);
-    if (error) {
+    if (!error) {
+      cookies.remove("token", { path: "/", domain: undefined });
+      setAdmin([]);
+      setSession(false);
+    } else {
       throw new Error(error.message);
     }
-    cookies.remove("token", { path: "/" });
-    setAdmin([]);
-    setSession(false);
   };
 
   return (

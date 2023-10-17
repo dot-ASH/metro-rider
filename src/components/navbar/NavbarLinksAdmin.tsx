@@ -41,8 +41,9 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 
   const { admin, signout } = useContext(AuthContext);
   const history = useHistory();
-  const signOut = () => {
-    signout();
+
+  const signThisOut = async () => {
+    await signout();
     history.push("/");
   };
 
@@ -98,7 +99,6 @@ export default function HeaderLinks(props: { secondary: boolean }) {
         >
           1,924
           <Text as="span" display={{ base: "none", md: "unset" }}>
-            {" "}
             ETH
           </Text>
         </Text>
@@ -212,7 +212,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
               color="red.400"
               borderRadius="8px"
               px="14px"
-              onClick={signOut}
+              onClick={signThisOut}
             >
               <Text fontSize="sm">Log out</Text>
             </MenuItem>

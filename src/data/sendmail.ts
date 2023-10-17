@@ -5,7 +5,7 @@ type templateParams = {
   email: string;
 };
 
-const SERVICE_KEY = process.env.REACT_APP_RESEND_API_KEY;
+const SERVICE_KEY = process.env.REACT_APP_EMAIL_SERVICE;
 const TEMPLATE_KEY = process.env.REACT_APP_EMAIL_TEMPLATE;
 const PUBLIC_KEY = process.env.REACT_APP_EMAIL_PUBLIC;
 

@@ -105,32 +105,32 @@ export default function ComplexTable() {
     let userInt = chance.integer({ min: 100000000, max: 999999999 });
     let secureNum = sha256HashPin(randomInt.toString());
 
-    const { error } = await supabase
-      .from("user")
-      .update({
-        approved: true,
-        nid: null,
-        status: "approved",
-      })
-      .eq("email", email);
+    // const { error } = await supabase
+    //   .from("user")
+    //   .update({
+    //     approved: true,
+    //     nid: null,
+    //     status: "approved",
+    //   })
+    //   .eq("email", email);
 
-    if (error) {
-      console.log(error);
-    } else {
-      const { error } = await supabase
-        .from("user_data")
-        .insert({ user_index: userInt, verify_pin: secureNum, phn_no: phone })
-        .eq("email", email);
-      if (!error) {
-        sendmail({ email: email, pin: String(randomInt) });
-        toastText(
-          "Request accepted",
-          `You have accepted the user: #${userInt}'s registration`,
-          "success"
-        );
-        refreshFunc();
-      }
-    }
+    // if (error) {
+    //   console.log(error);
+    // } else {
+    //   const { error } = await supabase
+    //     .from("user_data")
+    //     .insert({ user_index: userInt, verify_pin: secureNum, phn_no: phone })
+    //     .eq("email", email);
+    //   if (!error) {
+    sendmail({ email: email, pin: String(randomInt) });
+    toastText(
+      "Request accepted",
+      `You have accepted the user: #${userInt}'s registration`,
+      "success"
+    );
+    refreshFunc();
+    // }
+    // }
   };
 
   const reject = async (email: string) => {
