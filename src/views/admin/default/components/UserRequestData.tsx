@@ -109,7 +109,6 @@ export default function ComplexTable() {
       .from("user")
       .update({
         approved: true,
-        nid: null,
         status: "approved",
       })
       .eq("email", email);

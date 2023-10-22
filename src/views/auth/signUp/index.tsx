@@ -92,12 +92,14 @@ function SignUp() {
     const { error } = await supabase.from("user").insert(values);
 
     if (error) {
-      let erroLog = "";
+      let errorLog = "";
       error.message ===
       `duplicate key value violates unique constraint "user_phn_no_key"`
-        ? (erroLog = "This phone number is already been used")
-        : (erroLog = error.message);
-      toastText("Error Creating Registration", erroLog, "error");
+        ? (errorLog = "This phone number is already been used")
+        : error.message.includes("user_nid_key")
+        ? (errorLog = "This nid number is already been used")
+        : (errorLog = error.message);
+      toastText("Error Creating Registration", errorLog, "error");
     } else {
       toastText(
         "Succesfully Applied",
@@ -118,11 +120,12 @@ function SignUp() {
       w="100%"
       justifyContent="center"
       alignItems="center"
-      h="100vh "
       bg={"#f6f2ef"}
+      minHeight={"100vh"}
+      py={{ base: "3rem", md: "2rem" }}
     >
       <Flex
-        h="95%"
+        h="100%"
         alignItems="center"
         justifyContent="center"
         flexDirection="column"
@@ -163,19 +166,24 @@ function SignUp() {
                 justifyContent: "center",
                 gap: "1.5rem",
                 width: "100%",
+                height: "100%",
               }}
             >
               <Flex
                 flexDirection={{ base: "column", md: "row" }}
                 gap={{ base: "1rem", md: "5rem" }}
                 width="100%"
-                my={{ md: "1rem" }}
+                my={{ md: "2rem" }}
+                mx={{ md: "1rem" }}
+                justifyContent={"center"}
+                alignItems={"center"}
+                h={"100%"}
               >
                 <Flex
                   flexDirection="column"
                   maxW="350px"
                   gap={{ base: "2rem", md: "3rem" }}
-                  w={{ md: "320px", lg: "350px" }}
+                  w={{ base: "85%", md: "250px", lg: "350px" }}
                 >
                   <Field name="name" validate={validateName}>
                     {({ field, form }: any) => (
@@ -238,12 +246,12 @@ function SignUp() {
                     )}
                   </Field>
                 </Flex>
-                <VSeparator />
+                <VSeparator  />
                 <Flex
                   flexDirection="column"
                   gap={{ base: "2rem", md: "3rem" }}
                   maxW="350px"
-                  w={{ md: "320px", lg: "350px" }}
+                  w={{ base: "85%", md: "250px", lg: "350px" }}
                 >
                   <Field name="nid" validate={validateNId}>
                     {({ field, form }: any) => (

@@ -1,3 +1,4 @@
+import "assets/css/scroll.css";
 import {
   Box,
   Flex,
