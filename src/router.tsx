@@ -5,6 +5,8 @@ import UserRegistration from "views/auth/signUp";
 import AuthContext from "contexts/AuthContext";
 import AdminLayout from "./layouts/admin";
 import Home from "views/misc/Home";
+import Success from "views/misc/Success";
+import Failure from "views/misc/Failure";
 // import RTLLayout from "./layouts/rtl";
 // import MainDashboard from "views/admin/default";
 // import AuthLayout from "./layouts/auth";
@@ -19,10 +21,12 @@ export const AppRouter = () => {
       <Route exact path="/auth" component={SignInCentered} />
       <Route path="/registration" component={UserRegistration} />
       <Redirect from="admin" to={hasSession ? "admin" : "/"} /> */}
-      <Route exact path="/" component={Home} />
+      <Route path="/" component={Home} />
       <Route exact path="/auth" component={SignInCentered} />
       <Route path="/registration" component={UserRegistration} />
       <Route path="/admin" component={AdminLayout} />
+      <Route exact path={`/payment/${PRE_ROUTE}Success`} component={Success} />
+      <Route exact path={`/payment/${PRE_ROUTE}Failure`} component={Failure} />
     </Switch>
   );
 };

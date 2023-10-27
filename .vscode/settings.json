@@ -1,5 +1,0 @@
-{
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.tsdk": "/media/dot_ash/personal-nd-not-cool/productivity-nd-duh/Projects/admin-landing/node_modules/typescript/lib",
-  "editor.fontFamily": "Cascadia Code"
-}
