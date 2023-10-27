@@ -1,9 +1,69 @@
-import React from 'react'
+import React from "react";
+import { Flex, Image, Text, Link } from "@chakra-ui/react";
+import logo from "assets/img/logo.png";
 
-const Failure = () => {
+function Failure() {
+  const handleCloseTab = () => {
+    window.open("", "_self");
+    window.close();
+  };
+
   return (
-    <div>Failure</div>
-  )
+    <Flex
+      w={"100%"}
+      minH={"100vh"}
+      bg={"#f6f2ef"}
+      justifyContent="center"
+      alignItems={"center"}
+      flexDirection={"column"}
+      position="relative"
+      gap={5}
+    >
+      <Flex position={"absolute"} top={"10%"}>
+        <Image src={logo} width={{ base: "80px", md: "100px" }} />
+      </Flex>
+
+      <Flex flexDirection={"row"} alignItems="center" gap={5}>
+        <Image
+          src={require("../../assets/img/failure.gif")}
+          alt="failure"
+          w={20}
+          h={20}
+          mt={-7}
+        />
+        <Text
+          fontSize={{ base: "28px", md: "32px" }}
+          textAlign="center"
+          mb={"1.5rem"}
+          fontFamily="'Bree Serif', serif"
+          opacity={0.9}
+          color={"red.500"}
+        >
+          Recharge Failed!
+        </Text>
+      </Flex>
+      <Flex>
+        <Text
+          fontSize={"18px"}
+          textAlign="center"
+          mb={"1.5rem"}
+          fontFamily="'Vollkorn', serif"
+        >
+          Now you can close the tab &nbsp;
+        </Text>
+        <Link
+          href="https://chakra-ui.com"
+          isExternal
+          fontSize={"18px"}
+          fontFamily="'Vollkorn', serif"
+          textDecoration={"underline"}
+          onClick={handleCloseTab}
+        >
+          close
+        </Link>
+      </Flex>
+    </Flex>
+  );
 }
 
-export default Failure
+export default Failure;
