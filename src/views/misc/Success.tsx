@@ -3,6 +3,10 @@ import { Flex, Image, Text, Link } from "@chakra-ui/react";
 import logo from "assets/img/logo.png";
 
 function Success() {
+  const handleCloseTab = () => {
+    window.open("", "_self");
+    window.close();
+  };
   return (
     <Flex
       w={"100%"}
@@ -47,11 +51,11 @@ function Success() {
           Now you can close the tab &nbsp;
         </Text>
         <Link
-          href="https://chakra-ui.com"
-          isExternal
+          href=""
           fontSize={"18px"}
           fontFamily="'Vollkorn', serif"
           textDecoration={"underline"}
+          onClick={handleCloseTab}
         >
           close
         </Link>
