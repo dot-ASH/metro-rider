@@ -1,28 +1,5 @@
-/* eslint-disable */
-/*!
-  _   _  ___  ____  ___ ________  _   _   _   _ ___   
- | | | |/ _ \|  _ \|_ _|__  / _ \| \ | | | | | |_ _| 
- | |_| | | | | |_) || |  / / | | |  \| | | | | || | 
- |  _  | |_| |  _ < | | / /| |_| | |\  | | |_| || |
- |_| |_|\___/|_| \_\___/____\___/|_| \_|  \___/|___|
-                                                                                                                                                                                                                                                                                                                                       
-=========================================================
-* Horizon UI - v1.1.0
-=========================================================
-
-* Product Page: https://www.horizon-ui.com/
-* Copyright 2022 Horizon UI (https://www.horizon-ui.com/)
-
-* Designed and Coded by Simmmple
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-
-import React, { useContext, useEffect, useState } from "react";
-import { NavLink, useHistory, Redirect } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { useHistory, Redirect } from "react-router-dom";
 
 import {
   Box,
@@ -41,21 +18,17 @@ import {
   Image,
   useToast,
 } from "@chakra-ui/react";
-// Custom components
-import { HSeparator } from "components/separator/Separator";
-import DefaultAuth from "layouts/auth/Default";
+
 // Assets
-import illustration from "assets/img/auth/auth.png";
-import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
 import logo from "../../../assets/img/logo.png";
-import Cookies from "universal-cookie";
 import { sha256HashPin } from "../../../security/encrypt";
 import supabase from "data/supabase";
 import AuthContext from "contexts/AuthContext";
 import Chance from "chance";
 
+const PRE_ROUTE = process.env.REACT_APP_ROUTE_PRE;
 function SignIn() {
   const [show, setShow] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
@@ -69,19 +42,7 @@ function SignIn() {
   // Chakra color mode
   const textColor = useColorModeValue("navy.700", "white");
   const textColorSecondary = "gray.400";
-  const textColorDetails = useColorModeValue("navy.700", "secondaryGray.600");
-  const textColorBrand = useColorModeValue("teal", "white");
   const brandStars = useColorModeValue("teal", "brand.400");
-  const googleBg = useColorModeValue("secondaryGray.300", "whiteAlpha.200");
-  const googleText = useColorModeValue("navy.700", "white");
-  const googleHover = useColorModeValue(
-    { bg: "gray.200" },
-    { bg: "whiteAlpha.300" }
-  );
-  const googleActive = useColorModeValue(
-    { bg: "secondaryGray.300" },
-    { bg: "whiteAlpha.200" }
-  );
 
   const toastText = (
     title: string,
@@ -116,7 +77,7 @@ function SignIn() {
         let id = data[0]?.id;
         toastText("Success", "Signing in...", "success");
         await signin(hashedUserInput, remember, id);
-        history.push("/admin");
+        history.push(`/admin/default/${PRE_ROUTE}`);
       } else {
         toastText(
           "Check you credential",
@@ -127,10 +88,12 @@ function SignIn() {
     }
   };
 
+  console.log(hasSession);
+
   return (
     <>
       {hasSession ? (
-        <Redirect to="admin" />
+        <Redirect to="/admin" />
       ) : (
         <Flex w="100%" justifyContent="center" alignItems="center" h="100vh">
           <Flex

@@ -1,22 +1,28 @@
 import React, { useContext } from "react";
-import { Route, Redirect, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import SignInCentered from "views/auth/signIn";
 import UserRegistration from "views/auth/signUp";
 import AuthContext from "contexts/AuthContext";
 import AdminLayout from "./layouts/admin";
+import Home from "views/misc/Home";
 // import RTLLayout from "./layouts/rtl";
 // import MainDashboard from "views/admin/default";
 // import AuthLayout from "./layouts/auth";
 
+const PRE_ROUTE = process.env.REACT_APP_ROUTE_PRE;
 export const AppRouter = () => {
   const { hasSession } = useContext(AuthContext);
-  console.log(hasSession);
+  console.log(hasSession, PRE_ROUTE);
   return (
     <Switch>
-      <Route exact path="/" component={SignInCentered} />
+      {/* <Route exact path="/" component={Home} />
+      <Route exact path="/auth" component={SignInCentered} />
+      <Route path="/registration" component={UserRegistration} />
+      <Redirect from="admin" to={hasSession ? "admin" : "/"} /> */}
+      <Route exact path="/" component={Home} />
+      <Route exact path="/auth" component={SignInCentered} />
       <Route path="/registration" component={UserRegistration} />
       <Route path="/admin" component={AdminLayout} />
-      <Redirect from="admin" to={hasSession ? "admin" : "/"} />
     </Switch>
   );
 };

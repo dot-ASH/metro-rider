@@ -54,7 +54,6 @@ export default function ComplexTable() {
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
   const columnHelper = createColumnHelper<RowObj>();
-  // const RESEND_KEY = process.env.REACT_APP_RESEND_API_KEY;
   const chance = new Chance();
   const toast = useToast();
 

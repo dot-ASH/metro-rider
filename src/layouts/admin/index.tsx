@@ -3,18 +3,19 @@ import { Portal, Box, useDisclosure } from "@chakra-ui/react";
 // Layout components
 import Navbar from "components/navbar/NavbarAdmin";
 import Sidebar from "components/sidebar/Sidebar";
+import AuthContext from "contexts/AuthContext";
 import { SidebarContext } from "contexts/SidebarContext";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import routes from "routes";
 
-// Custom Chakra theme
+const PRE_ROUTE = process.env.REACT_APP_ROUTE_PRE;
 export default function Dashboard(props: { [x: string]: any }) {
+  const { hasSession } = useContext(AuthContext);
   const { ...rest } = props;
-  // states and functions
   const [fixed] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
-  // functions for changing the states from components
+
   const getRoute = () => {
     return window.location.pathname !== "/admin/full-screen-maps";
   };
@@ -115,7 +116,11 @@ export default function Dashboard(props: { [x: string]: any }) {
             >
               <Switch>
                 {getRoutes(routes)}
-                <Redirect from="/" to="/admin/default" />
+                {/* <Redirect from="admin/default" to="/auth" /> */}
+                <Redirect
+                  from="/admin"
+                  to={hasSession ? `/admin/default/${PRE_ROUTE}` : "/auth"}
+                />
               </Switch>
             </Box>
           ) : null}

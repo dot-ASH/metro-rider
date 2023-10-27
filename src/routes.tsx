@@ -25,7 +25,7 @@ const routes = [
   {
     name: "Main Dashboard",
     layout: "/admin",
-    path: "/default",
+    path: `/default/${process.env.REACT_APP_ROUTE_PRE}`,
     icon: (
       <Icon
         as={MdHome}
@@ -55,7 +55,7 @@ const routes = [
   {
     name: "Profile",
     layout: "/admin",
-    path: "/profile",
+    path: `/profile/${process.env.REACT_APP_ROUTE_PRE}`,
     icon: (
       <Icon
         as={MdPerson}
