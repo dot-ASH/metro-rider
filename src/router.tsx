@@ -25,10 +25,10 @@ export const AppRouter = () => {
       <Route exact path="/auth" component={SignInCentered} />
       <Route exact path="/registration" component={UserRegistration} />
       <Route path="/admin" component={AdminLayout} />
-      <Route exact path={`/payment/${PRE_ROUTE}Success`} component={Success} />
-      {/* <Route exact path={`/success`} component={Success} /> */}
-      <Route exact path={`/payment/${PRE_ROUTE}Failure`} component={Failure} />
-      {/* <Route exact path={`/failure`} component={Failure} /> */}
+      {/* <Route exact path={`/payment/${PRE_ROUTE}Success`} component={Success} /> */}
+      <Route exact path={`/success`} component={Success} />
+      {/* <Route exact path={`/payment/${PRE_ROUTE}Failure`} component={Failure} /> */}
+      <Route exact path={`/failure`} component={Failure} />
     </Switch>
   );
 };

@@ -38,7 +38,6 @@ function Success() {
         >
           <Image
             src={require("../../assets/img/home.gif")}
-            alt="success"
             w={{ base: "50px", md: "70px" }}
             h={{ base: "50px", md: "70px" }}
             mt={-7}

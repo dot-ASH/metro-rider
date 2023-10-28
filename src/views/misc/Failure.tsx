@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { Flex, Image, Text, Link } from "@chakra-ui/react";
 import logo from "assets/img/logo.png";
@@ -26,7 +27,6 @@ function Failure() {
       <Flex flexDirection={"row"} alignItems="center" gap={5}>
         <Image
           src={require("../../assets/img/failure.gif")}
-          alt="failure"
           w={20}
           h={20}
           mt={-7}
@@ -49,9 +49,9 @@ function Failure() {
           mb={"1.5rem"}
           fontFamily="'Vollkorn', serif"
         >
-          Now you can close the tab &nbsp;
+          Now you can close the tab. &nbsp;
         </Text>
-        <Link
+        {/* <Link
           href=""
           fontSize={"18px"}
           fontFamily="'Vollkorn', serif"
@@ -59,7 +59,7 @@ function Failure() {
           onClick={handleCloseTab}
         >
           close
-        </Link>
+        </Link> */}
       </Flex>
     </Flex>
   );
