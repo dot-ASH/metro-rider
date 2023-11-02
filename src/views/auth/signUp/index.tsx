@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -11,16 +11,77 @@ import {
   useToast,
   FormErrorMessage,
   Input,
+  InputLeftElement,
+  InputGroup,
+  Select,
 } from "@chakra-ui/react";
 import supabase from "data/supabase";
 import { Field, Form, Formik } from "formik";
 import logo from "../../../assets/img/logo.png";
 import { VSeparator } from "components/separator/Separator";
+import { TbLetterB, TbLetterN } from "react-icons/tb";
+
+interface DropDownOptios {
+  station_name: string;
+  station_code: string;
+}
 
 function SignUp() {
   const toast = useToast();
   const textColor = "#322E2F";
   const textColorSecondary = "#938585";
+  const [nidIcon, setNidIcon] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [stationData, setStationData] = useState<DropDownOptios[]>([]);
+  const [stationOption, setStationOption] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(
+    "choose your nearest station"
+  );
+
+  const getStationData = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("station")
+      .select("station_name, station_code")
+      .order("distance");
+    if (!error) {
+      setStationData(data);
+    } else {
+      console.log(error.message);
+    }
+  }, []);
+
+  // const getUserData = useCallback(async () => {
+  //   const { data, error } = await supabase.from("user").select("*");
+  //   if (!error) {
+  //     console.log(data);
+  //   } else {
+  //     console.log(error.message);
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    getStationData();
+  }, [getStationData]);
+
+  // useEffect(() => {
+  //   getUserData();
+  // }, [getUserData]);
+
+  useEffect(() => {
+    if (stationData) {
+      setLoading(false);
+      let newArrObj = stationData.map((obj) => {
+        return { label: obj.station_name, value: obj.station_code };
+      });
+      setStationOption(newArrObj);
+    } else {
+      setLoading(true);
+    }
+  }, [stationData]);
+
+  const handleSelectChange = (event: any) => {
+    setSelectedOption(event.target.value);
+  };
 
   const toastText = (
     title: string,
@@ -57,12 +118,15 @@ function SignUp() {
   }
 
   function validateNId(value: string) {
+    value.length < 11 ? setNidIcon(true) : setNidIcon(false);
+
     const NID_REG = /^(\d{10})$/;
+    const BIRTH_REG = /^(\d{17})$/;
     let error;
     if (!value) {
       error = "NID number is required";
-    } else if (!NID_REG.test(value)) {
-      error = "Enter valid NID number";
+    } else if (!(NID_REG.test(value) || BIRTH_REG.test(value))) {
+      error = "Enter valid NID or Birth certificate number";
     }
     return error;
   }
@@ -89,15 +153,12 @@ function SignUp() {
 
   const handleReg = async (values: any, actions: any) => {
     values.phn_no = values.phn_no.replace(/^\+/, "");
+    values.address = selectedOption;
     const { error } = await supabase.from("user").insert(values);
-
     if (error) {
       let errorLog = "";
-      error.message ===
-      `duplicate key value violates unique constraint "user_phn_no_key"`
-        ? (errorLog = "This phone number is already been used")
-        : error.message.includes("user_nid_key")
-        ? (errorLog = "This nid number is already been used")
+      error.message.includes("user_nid_key")
+        ? (errorLog = "This nid or birth cert. number is already been used")
         : (errorLog = error.message);
       toastText("Error Creating Registration", errorLog, "error");
     } else {
@@ -112,6 +173,7 @@ function SignUp() {
           values[key] = "";
         }
       }
+      setSelectedOption("");
     }
   };
 
@@ -132,7 +194,7 @@ function SignUp() {
         gap={{ base: "0", md: "5" }}
       >
         <Image src={logo} width={{ base: "80px", md: "100px" }} />
-        <Box me="auto" w="100%" m="1.3rem" mb={{ base: "3", md: "3" }}>
+        <Box me="auto" w="100%" m="1.3rem" mb={{ base: "2", md: "-2" }}>
           <Heading
             color={textColor}
             fontSize={{ base: "32px", md: "36px" }}
@@ -246,7 +308,7 @@ function SignUp() {
                     )}
                   </Field>
                 </Flex>
-                <VSeparator  />
+                <VSeparator />
                 <Flex
                   flexDirection="column"
                   gap={{ base: "2rem", md: "3rem" }}
@@ -263,16 +325,42 @@ function SignUp() {
                           color={textColor}
                           fontFamily="'Vollkorn SC', serif"
                         >
-                          NID Number
+                          NID or Birth Certificate Number
                         </FormLabel>
-                        <Input
-                          {...field}
-                          placeholder="you valid nid number!"
-                          variant="flushed"
-                          _placeholder={{ color: textColorSecondary }}
-                          fontFamily="'Vollkorn', serif"
-                          _focus={onFocus}
-                        />
+                        <InputGroup>
+                          <InputLeftElement
+                            pointerEvents="none"
+                            children={
+                              nidIcon ? (
+                                <TbLetterN
+                                  size={16}
+                                  color={textColorSecondary}
+                                  style={{
+                                    marginLeft: "-1rem",
+                                    marginTop: "-0.2rem",
+                                  }}
+                                />
+                              ) : (
+                                <TbLetterB
+                                  size={16}
+                                  color={textColorSecondary}
+                                  style={{
+                                    marginLeft: "-1rem",
+                                    marginTop: "-0.2rem",
+                                  }}
+                                />
+                              )
+                            }
+                          />
+                          <Input
+                            {...field}
+                            placeholder="you valid nid number!"
+                            variant="flushed"
+                            _placeholder={{ color: textColorSecondary }}
+                            fontFamily="'Vollkorn', serif"
+                            _focus={onFocus}
+                          />
+                        </InputGroup>
                         <FormErrorMessage
                           fontFamily={"'Vollkorn SC', serif"}
                           fontSize={12}
@@ -314,6 +402,51 @@ function SignUp() {
                   </Field>
                 </Flex>
               </Flex>
+              <Flex flexDirection={"row"} mt={"0.7rem"}>
+                <Field name="addrs">
+                  {({ field, form }: any) => (
+                    <FormControl
+                      isRequired
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "1rem",
+                      }}
+                      display={"flex"}
+                      flexDirection={{ base: "column", md: "row" }}
+                    >
+                      <FormLabel
+                        color={textColor}
+                        fontFamily="'Vollkorn SC', serif"
+                        textAlign={"left"}
+                        width={{ base: "85%", md: "auto" }}
+                      >
+                        &nbsp;Address
+                      </FormLabel>
+                      <Select
+                        {...field}
+                        value={selectedOption}
+                        onChange={handleSelectChange}
+                        variant={"flushed"}
+                        maxW="350px"
+                        w={{ base: "85%", md: "250px", lg: "350px" }}
+                        fontFamily="'Vollkorn SC', serif"
+                        fontSize={14}
+                        _focus={onFocus}
+                        onLoad={loading}
+                      >
+                        {stationOption.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                </Field>
+              </Flex>
+
               <Button
                 alignSelf="center"
                 mt={8}

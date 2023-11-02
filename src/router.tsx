@@ -17,18 +17,12 @@ export const AppRouter = () => {
   console.log(hasSession, PRE_ROUTE);
   return (
     <Switch>
-      {/* <Route exact path="/" component={Home} />
-      <Route exact path="/auth" component={SignInCentered} />
-      <Route path="/registration" component={UserRegistration} />
-      <Redirect from="admin" to={hasSession ? "admin" : "/"} /> */}
       <Route exact path="/" component={Home} />
       <Route exact path="/auth" component={SignInCentered} />
       <Route exact path="/registration" component={UserRegistration} />
       <Route path="/admin" component={AdminLayout} />
       <Route exact path={`/payment/${PRE_ROUTE}Success`} component={Success} />
-      {/* <Route exact path={`/success`} component={Success} /> */}
       <Route exact path={`/payment/${PRE_ROUTE}Failure`} component={Failure} />
-      {/* <Route exact path={`/failure`} component={Failure} /> */}
     </Switch>
   );
 };
