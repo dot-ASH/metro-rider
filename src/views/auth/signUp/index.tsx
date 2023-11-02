@@ -402,7 +402,7 @@ function SignUp() {
                   </Field>
                 </Flex>
               </Flex>
-              <Flex flexDirection={"row"} mt={"0.7rem"}>
+              <Flex flexDirection={"row"} mt={{ base: "0.7rem", md: "0rem" }}>
                 <Field name="addrs">
                   {({ field, form }: any) => (
                     <FormControl
