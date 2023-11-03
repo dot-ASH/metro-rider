@@ -99,7 +99,7 @@ export default function ComplexTable() {
     return formattedDate;
   };
 
-  const approve = async (email: string, phone: string) => {
+  const approve = async (email: string, phone: string, nid: string) => {
     let randomInt = chance.integer({ min: 10000, max: 99999 });
     let userInt = chance.integer({ min: 100000000, max: 999999999 });
     let secureNum = sha256HashPin(randomInt.toString());
@@ -117,7 +117,12 @@ export default function ComplexTable() {
     } else {
       const { error } = await supabase
         .from("user_data")
-        .insert({ user_index: userInt, verify_pin: secureNum, phn_no: phone })
+        .insert({
+          user_index: userInt,
+          verify_pin: secureNum,
+          phn_no: phone,
+          nid: nid,
+        })
         .eq("email", email);
       if (!error) {
         sendmail({ email: email, pin: String(randomInt) });
@@ -298,7 +303,11 @@ export default function ComplexTable() {
               gap="1rem"
               ml="-1rem"
               onClick={() =>
-                approve(info.getValue(), info.cell.row.original.phn_no)
+                approve(
+                  info.getValue(),
+                  info.cell.row.original.phn_no,
+                  info.cell.row.original.nid
+                )
               }
             >
               <Icon
