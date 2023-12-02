@@ -12,7 +12,20 @@ import {
   useColorModeValue,
   Button,
   useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  FormLabel,
+  FormControl,
+  NumberInput,
+  NumberInputField,
 } from "@chakra-ui/react";
+
 import {
   createColumnHelper,
   flexRender,
@@ -21,9 +34,10 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+
 import Card from "components/card/Card";
 import Menu from "components/menu/MainMenu";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   MdCancel,
   MdCheckCircle,
@@ -34,8 +48,9 @@ import { PiHourglassHighBold } from "react-icons/pi";
 import supabase from "data/supabase";
 import moment from "moment";
 import Chance from "chance";
-import { sha256HashPin } from "security/encrypt";
+import { aesHashDecrypt, aesHashEncrypt, sha256HashPin } from "security/encrypt";
 import sendmail from "data/sendmail";
+import { parseInt } from "lodash";
 
 type RowObj = {
   name: string;
@@ -56,6 +71,14 @@ export default function ComplexTable() {
   const columnHelper = createColumnHelper<RowObj>();
   const chance = new Chance();
   const toast = useToast();
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userPhn, setUserPhn] = useState<string>("");
+  const [userNid, setUserNid] = useState<string>("");
+  const [userRfid, setRfidTag] = useState<number | null >();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const initialRef = useRef(null)
+  const finalRef = useRef(null)
+
 
   const toastText = (
     title: string,
@@ -99,10 +122,31 @@ export default function ComplexTable() {
     return formattedDate;
   };
 
-  const approve = async (email: string, phone: string, nid: string) => {
+  const onModalOpen = (email: string, phone: string, nid: string) => {
+    setUserEmail(email);
+    setUserPhn(phone);
+    setUserNid(nid);
+    onOpen();
+  }
+
+  const onModalClose = () => {
+    setUserEmail("");
+    setUserPhn("");
+    setUserNid("");
+    onClose();
+  }
+
+  const approve = async (email: string, phone: string, nid: string, rfid: number) => {
+    let hasMember = false;
     let randomInt = chance.integer({ min: 10000, max: 99999 });
-    let userInt = chance.integer({ min: 100000000, max: 999999999 });
+    let userInt = rfid;
     let secureNum = sha256HashPin(randomInt.toString());
+
+    const { data } = await supabase.from("user_data").select("verify_pin").eq("phn_no", phone);
+    if (data.length > 0) {
+      hasMember = true;
+      secureNum = data[0].verify_pin;
+    }
 
     const { error } = await supabase
       .from("user")
@@ -110,10 +154,10 @@ export default function ComplexTable() {
         approved: true,
         status: "approved",
       })
-      .eq("email", email);
+      .eq("nid", nid);
 
     if (error) {
-      console.log(error);
+      console.log("Error adding user: ", error);
     } else {
       const { error } = await supabase
         .from("user_data")
@@ -123,14 +167,15 @@ export default function ComplexTable() {
           phn_no: phone,
           nid: nid,
         })
-        .eq("email", email);
       if (!error) {
-        sendmail({ email: email, pin: String(randomInt) });
+        hasMember ? sendmail({ email: email, pin: "use same pin for both user" }) : sendmail({ email: email, pin: String(randomInt) });
         toastText(
-          "Request accepted",
-          `You have accepted the user: #${userInt}'s registration`,
-          "success"
-        );
+            "Request accepted",
+            `You have accepted the user: #${userInt}'s registration`,
+            "success"
+          );
+        setRfidTag(null);
+        onClose();
         refreshFunc();
       }
     }
@@ -218,7 +263,7 @@ export default function ComplexTable() {
           p="0.6rem"
           px="1rem"
         >
-          {info.getValue()}
+          {aesHashDecrypt(info.getValue())}
         </Text>
       ),
     }),
@@ -244,19 +289,19 @@ export default function ComplexTable() {
               info.getValue() === "approved"
                 ? "green.500"
                 : info.getValue() === "pending"
-                ? "orange.500"
-                : info.getValue() === "rejected"
-                ? "red.500"
-                : null
+                  ? "orange.500"
+                  : info.getValue() === "rejected"
+                    ? "red.500"
+                    : null
             }
             as={
               info.getValue() === "approved"
                 ? MdCheckCircle
                 : info.getValue() === "pending"
-                ? PiHourglassHighBold
-                : info.getValue() === "rejected"
-                ? MdErrorOutline
-                : null
+                  ? PiHourglassHighBold
+                  : info.getValue() === "rejected"
+                    ? MdErrorOutline
+                    : null
             }
           />
           <Text color={textColor} fontSize="sm" fontWeight="700">
@@ -303,7 +348,7 @@ export default function ComplexTable() {
               gap="1rem"
               ml="-1rem"
               onClick={() =>
-                approve(
+                onModalOpen(
                   info.getValue(),
                   info.cell.row.original.phn_no,
                   info.cell.row.original.nid
@@ -380,92 +425,126 @@ export default function ComplexTable() {
   }, [tableData]);
 
   return (
-    <Card
-      flexDirection="column"
-      w="100%"
-      px="0px"
-      overflowX={{ sm: "scroll", lg: "hidden" }}
-      minHeight={280}
-      mt="10"
-    >
-      <Flex px="25px" mb="8px" justifyContent="space-between" align="center">
-        <Text
-          color={textColor}
-          fontSize="22px"
-          fontWeight="700"
-          lineHeight="100%"
-        >
-          User Registration Request
-        </Text>
-        <Menu />
-      </Flex>
-      <Box maxHeight={"330px"}>
-        {table.getRowModel().rows.length > 0 ? (
-          <Table variant="simple" color="gray.500" mb="24px" mt="12px">
-            <Thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <Tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <Th
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        pe="10px"
-                        borderColor={borderColor}
-                        cursor="pointer"
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        <Flex
-                          justifyContent="space-between"
-                          align="center"
-                          fontSize={{ sm: "10px", lg: "12px" }}
-                          color="gray.400"
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {{
-                            asc: "",
-                            desc: "",
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </Flex>
-                      </Th>
-                    );
-                  })}
-                </Tr>
-              ))}
-            </Thead>
-            <Tbody>
-              {table.getRowModel().rows.map((row) => {
-                return (
-                  <Tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
+    <>
+      <Modal
+        initialFocusRef={initialRef}
+        finalFocusRef={finalRef}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Attach a card to the user</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel>Card Id</FormLabel>
+              <NumberInput
+                max={11}
+                keepWithinRange={false}
+                clampValueOnBlur={false}
+
+              >
+                <NumberInputField ref={initialRef} placeholder='eg. 20394201034' onChange={(e) => setRfidTag(parseInt(e.target.value, 10))} />
+              </NumberInput>
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='teal' mr={3} onClick={() => approve(userEmail, userPhn, userNid, userRfid)}>
+              Save
+            </Button>
+            <Button onClick={onModalClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Card
+        flexDirection="column"
+        w="100%"
+        px="0px"
+        overflowX={{ sm: "scroll", lg: "hidden" }}
+        minHeight={280}
+        mt="10"
+      >
+        <Flex px="25px" mb="8px" justifyContent="space-between" align="center">
+          <Text
+            color={textColor}
+            fontSize="22px"
+            fontWeight="700"
+            lineHeight="100%"
+          >
+            User Registration Request
+          </Text>
+          <Menu />
+        </Flex>
+        <Box maxHeight={"330px"}>
+          {table.getRowModel().rows.length > 0 ? (
+            <Table variant="simple" color="gray.500" mb="24px" mt="12px">
+              <Thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <Tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
                       return (
-                        <Td
-                          key={cell.id}
-                          fontSize={{ sm: "14px" }}
-                          minW={{ sm: "150px", md: "200px", lg: "auto" }}
-                          borderColor="transparent"
+                        <Th
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          pe="10px"
+                          borderColor={borderColor}
+                          cursor="pointer"
+                          onClick={header.column.getToggleSortingHandler()}
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </Td>
+                          <Flex
+                            justifyContent="space-between"
+                            align="center"
+                            fontSize={{ sm: "10px", lg: "12px" }}
+                            color="gray.400"
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {{
+                              asc: "",
+                              desc: "",
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </Flex>
+                        </Th>
                       );
                     })}
                   </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
-        ) : (
-          <Flex justifyContent="center" m="2rem">
-            <Text color="">No Records Found!</Text>
-          </Flex>
-        )}
-      </Box>
-    </Card>
+                ))}
+              </Thead>
+              <Tbody>
+                {table.getRowModel().rows.map((row) => {
+                  return (
+                    <Tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <Td
+                            key={cell.id}
+                            fontSize={{ sm: "14px" }}
+                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                            borderColor="transparent"
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </Td>
+                        );
+                      })}
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          ) : (
+            <Flex justifyContent="center" m="2rem">
+              <Text color="">No Records Found!</Text>
+            </Flex>
+          )}
+        </Box>
+      </Card>
+    </>
   );
 }

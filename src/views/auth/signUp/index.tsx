@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -20,6 +20,7 @@ import { Field, Form, Formik } from "formik";
 import logo from "../../../assets/img/logo.png";
 import { VSeparator } from "components/separator/Separator";
 import { TbLetterB, TbLetterN } from "react-icons/tb";
+import { aesHashEncrypt } from "security/encrypt";
 
 interface DropDownOptios {
   station_name: string;
@@ -50,22 +51,9 @@ function SignUp() {
     }
   }, []);
 
-  // const getUserData = useCallback(async () => {
-  //   const { data, error } = await supabase.from("user").select("*");
-  //   if (!error) {
-  //     console.log(data);
-  //   } else {
-  //     console.log(error.message);
-  //   }
-  // }, []);
-
   useEffect(() => {
     getStationData();
   }, [getStationData]);
-
-  // useEffect(() => {
-  //   getUserData();
-  // }, [getUserData]);
 
   useEffect(() => {
     if (stationData) {
@@ -108,9 +96,8 @@ function SignUp() {
   function validateEmail(value: string) {
     const EMAIL_REG = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     let error;
-    if (!value) {
-      error = "Email is required";
-    } else if (!EMAIL_REG.test(value)) {
+
+    if (value.length > 0 && !EMAIL_REG.test(value)) {
       error = "Enter a valid email address";
     }
 
@@ -154,13 +141,30 @@ function SignUp() {
   const handleReg = async (values: any, actions: any) => {
     values.phn_no = values.phn_no.replace(/^\+/, "");
     values.address = selectedOption;
+    let secureNid = aesHashEncrypt(values.nid);
+    values.nid = secureNid;
+
+    const { data } = await supabase.from("user").select("*").eq("phn_no", values.phn_no);
+    if (data.length > 0) {
+      values.email = data[0].email;
+    }
     const { error } = await supabase.from("user").insert(values);
     if (error) {
       let errorLog = "";
-      error.message.includes("user_nid_key")
-        ? (errorLog = "This nid or birth cert. number is already been used")
-        : (errorLog = error.message);
+      errorLog = error.message.includes("user_nid_key")
+        ? "This nid or birth cert. number is already in use"
+        : error.message.includes("user_address_fkey")
+          ? "Select a station"
+          : error.message;
       toastText("Error Creating Registration", errorLog, "error");
+      actions.setSubmitting(false);
+      for (const key in values) {
+        if (values.hasOwnProperty(key)) {
+          values[key] = "";
+        }
+      }
+      setSelectedOption("");
+
     } else {
       toastText(
         "Succesfully Applied",
@@ -206,7 +210,7 @@ function SignUp() {
           </Heading>
           <Text
             textAlign="center"
-            mb="36px"
+            mb="10px"
             ms="4px"
             color={textColorSecondary}
             fontWeight="400"
@@ -215,6 +219,15 @@ function SignUp() {
           >
             Enter inforamtion acccordingly to apply!
           </Text>
+          <Text textAlign="center"
+            mb="30px"
+            ms="4px"
+            color={textColorSecondary}
+            fontWeight="400"
+            fontSize={{ md: "xs" }}
+            fontFamily="'Vollkorn', serif"
+            fontStyle={'italic'}
+          >*if you already have an id then you dont have to enter any email.</Text>
         </Box>
         <Formik
           initialValues={{ name: "", email: "", nid: "", phn_no: "" }}
@@ -262,7 +275,7 @@ function SignUp() {
                         </FormLabel>
                         <Input
                           {...field}
-                          placeholder="Your name. e.g. Sakir Ashker"
+                          placeholder="e.g. Sakir Ashker"
                           size="md"
                           variant="flushed"
                           _placeholder={{ color: textColorSecondary }}
@@ -282,7 +295,6 @@ function SignUp() {
                     {({ field, form }: any) => (
                       <FormControl
                         isInvalid={form.errors.email && form.touched.email}
-                        isRequired
                       >
                         <FormLabel
                           color={textColor}
@@ -292,7 +304,7 @@ function SignUp() {
                         </FormLabel>
                         <Input
                           {...field}
-                          placeholder="Your email. e.g. nafees@gmail.com"
+                          placeholder="e.g. nafees@gmail.com"
                           variant="flushed"
                           _placeholder={{ color: textColorSecondary }}
                           fontFamily="'Vollkorn', serif"
@@ -354,7 +366,7 @@ function SignUp() {
                           />
                           <Input
                             {...field}
-                            placeholder="you valid nid number!"
+                            placeholder="Your valid nid number!"
                             variant="flushed"
                             _placeholder={{ color: textColorSecondary }}
                             fontFamily="'Vollkorn', serif"
@@ -464,6 +476,7 @@ function SignUp() {
               </Button>
             </Form>
           )}
+
         </Formik>
       </Flex>
     </Flex>
