@@ -227,7 +227,7 @@ function SignUp() {
             fontSize={{ md: "xs" }}
             fontFamily="'Vollkorn', serif"
             fontStyle={'italic'}
-          >*if you already have an id then you dont have to enter any email.</Text>
+          >*if you already have an id then you don't have to enter any email address.</Text>
         </Box>
         <Formik
           initialValues={{ name: "", email: "", nid: "", phn_no: "" }}
@@ -444,9 +444,10 @@ function SignUp() {
                         maxW="350px"
                         w={{ base: "85%", md: "250px", lg: "350px" }}
                         fontFamily="'Vollkorn SC', serif"
-                        fontSize={14}
+                        fontSize={17}
                         _focus={onFocus}
                         onLoad={loading}
+                        placeholder="Select nearest station"
                       >
                         {stationOption.map((option) => (
                           <option key={option.value} value={option.value}>

@@ -42,21 +42,21 @@ export function SidebarLinks(props: {
 										ps='10px'>
 										<Flex w='100%' alignItems='center' justifyContent='center'>
 											<Box
-												color={activeRoute(route.path.toLowerCase()) ? activeIcon : textColor}
+												color={activeRoute(route.pathName.toLowerCase()) ? activeIcon : textColor}
 												me='18px'>
 												{route.icon}
 											</Box>
 											<Text
 												me='auto'
-												color={activeRoute(route.path.toLowerCase()) ? activeColor : textColor}
-												fontWeight={activeRoute(route.path.toLowerCase()) ? 'bold' : 'normal'}>
+												color={activeRoute(route.pathName.toLowerCase()) ? activeColor : textColor}
+												fontWeight={activeRoute(route.pathName.toLowerCase()) ? 'bold' : 'normal'}>
 												{route.name}
 											</Text>
 										</Flex>
 										<Box
 											h='36px'
 											w='4px'
-											bg={activeRoute(route.path.toLowerCase()) ? brandColor : 'transparent'}
+											bg={activeRoute(route.pathName.toLowerCase()) ? brandColor : 'transparent'}
 											borderRadius='5px'
 										/>
 									</HStack>

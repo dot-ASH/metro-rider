@@ -1,7 +1,5 @@
 // Chakra imports
-import { Portal, Box, useDisclosure } from "@chakra-ui/react";
-// Layout components
-import Navbar from "components/navbar/NavbarAdmin";
+import {  Box  } from "@chakra-ui/react";
 import Sidebar from "components/sidebar/Sidebar";
 import AuthContext from "contexts/AuthContext";
 import { SidebarContext } from "contexts/SidebarContext";
@@ -13,44 +11,10 @@ const PRE_ROUTE = process.env.REACT_APP_ROUTE_PRE;
 export default function Dashboard(props: { [x: string]: any }) {
   const { hasSession } = useContext(AuthContext);
   const { ...rest } = props;
-  const [fixed] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
 
   const getRoute = () => {
     return window.location.pathname !== "/admin/full-screen-maps";
-  };
-  const getActiveRoute = (routes: RoutesType[]): string => {
-    let activeRoute = "Default Brand Text";
-    for (let i = 0; i < routes.length; i++) {
-      if (
-        window.location.href.indexOf(routes[i].layout + routes[i].path) !== -1
-      ) {
-        return routes[i].name;
-      }
-    }
-    return activeRoute;
-  };
-  const getActiveNavbar = (routes: RoutesType[]): boolean => {
-    let activeNavbar = false;
-    for (let i = 0; i < routes.length; i++) {
-      if (
-        window.location.href.indexOf(routes[i].layout + routes[i].path) !== -1
-      ) {
-        return routes[i].secondary;
-      }
-    }
-    return activeNavbar;
-  };
-  const getActiveNavbarText = (routes: RoutesType[]): string | boolean => {
-    let activeNavbar = false;
-    for (let i = 0; i < routes.length; i++) {
-      if (
-        window.location.href.indexOf(routes[i].layout + routes[i].path) !== -1
-      ) {
-        return routes[i].name;
-      }
-    }
-    return activeNavbar;
   };
   const getRoutes = (routes: RoutesType[]): any => {
     return routes.map((route: RoutesType, key: any) => {
@@ -68,7 +32,7 @@ export default function Dashboard(props: { [x: string]: any }) {
     });
   };
   document.documentElement.dir = "ltr";
-  const { onOpen } = useDisclosure();
+
   return (
     <Box>
       <SidebarContext.Provider
@@ -92,31 +56,16 @@ export default function Dashboard(props: { [x: string]: any }) {
           transitionProperty="top, bottom, width"
           transitionTimingFunction="linear, linear, ease"
         >
-          <Portal>
-            <Box>
-              <Navbar
-                onOpen={onOpen}
-                logoText={"Horizon UI Dashboard PRO"}
-                brandText={getActiveRoute(routes)}
-                secondary={getActiveNavbar(routes)}
-                message={getActiveNavbarText(routes)}
-                fixed={fixed}
-                {...rest}
-              />
-            </Box>
-          </Portal>
-
           {getRoute() ? (
             <Box
               mx="auto"
               p={{ base: "20px", md: "30px" }}
               pe="20px"
               minH="100vh"
-              pt="50px"
+              pt="20px"
             >
               <Switch>
                 {getRoutes(routes)}
-                {/* <Redirect from="admin/default" to="/auth" /> */}
                 <Redirect
                   from="/admin"
                   to={hasSession ? `/admin/default/${PRE_ROUTE}` : "/auth"}

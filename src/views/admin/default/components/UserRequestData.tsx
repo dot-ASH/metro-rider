@@ -22,8 +22,7 @@ import {
   useDisclosure,
   FormLabel,
   FormControl,
-  NumberInput,
-  NumberInputField,
+  Select
 } from "@chakra-ui/react";
 
 import {
@@ -37,7 +36,7 @@ import {
 
 import Card from "components/card/Card";
 import Menu from "components/menu/MainMenu";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MdCancel,
   MdCheckCircle,
@@ -50,7 +49,6 @@ import moment from "moment";
 import Chance from "chance";
 import { aesHashDecrypt, aesHashEncrypt, sha256HashPin } from "security/encrypt";
 import sendmail from "data/sendmail";
-import { parseInt } from "lodash";
 
 type RowObj = {
   name: string;
@@ -61,6 +59,10 @@ type RowObj = {
   approved: boolean;
   phn_no: string;
 };
+
+interface DropDownOptios {
+  tag_id: number;
+}
 
 export default function ComplexTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -74,11 +76,47 @@ export default function ComplexTable() {
   const [userEmail, setUserEmail] = useState<string>("");
   const [userPhn, setUserPhn] = useState<string>("");
   const [userNid, setUserNid] = useState<string>("");
-  const [userRfid, setRfidTag] = useState<number | null >();
+  const [userRfid, setRfidTag] = useState<number | null>();
   const { isOpen, onOpen, onClose } = useDisclosure()
   const initialRef = useRef(null)
   const finalRef = useRef(null)
+  const [loading, setLoading] = useState(false);
+  const [cardData, setCardData] = useState<DropDownOptios[]>([]);
+  const [cardOption, setCardOption] = useState([]);
+  const [selectedOption, setSelectedOption] = useState("choose your tag");
 
+
+  const getCardData = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("cards")
+      .select("tag_id")
+      .eq("available", true)
+    if (!error) {
+      setCardData(data);
+    } else {
+      console.log(error.message);
+    }
+  }, []);
+
+  const handleSelectChange = (event: any) => {
+    setSelectedOption(event.target.value);
+  };
+
+  useEffect(() => {
+    getCardData();
+  }, [getCardData]);
+
+  useEffect(() => {
+    if (cardData) {
+      setLoading(false);
+      let newArrObj = cardData.map((obj) => {
+        return { label: obj.tag_id, value: obj.tag_id };
+      });
+      setCardOption(newArrObj);
+    } else {
+      setLoading(true);
+    }
+  }, [cardData]);
 
   const toastText = (
     title: string,
@@ -136,19 +174,21 @@ export default function ComplexTable() {
     onClose();
   }
 
-  const approve = async (email: string, phone: string, nid: string, rfid: number) => {
+  const approve = async (email: string, phone: string, nid: string) => {
+    setLoading(true);
     let hasMember = false;
     let randomInt = chance.integer({ min: 10000, max: 99999 });
-    let userInt = rfid;
+    let userInt = chance.integer({ min: 100000000, max: 999999999 });
     let secureNum = sha256HashPin(randomInt.toString());
 
     const { data } = await supabase.from("user_data").select("verify_pin").eq("phn_no", phone);
+
     if (data.length > 0) {
       hasMember = true;
       secureNum = data[0].verify_pin;
     }
 
-    const { error } = await supabase
+    const { error: userUpdateError } = await supabase
       .from("user")
       .update({
         approved: true,
@@ -156,29 +196,47 @@ export default function ComplexTable() {
       })
       .eq("nid", nid);
 
-    if (error) {
-      console.log("Error adding user: ", error);
-    } else {
-      const { error } = await supabase
-        .from("user_data")
-        .insert({
-          user_index: userInt,
-          verify_pin: secureNum,
-          phn_no: phone,
-          nid: nid,
-        })
-      if (!error) {
-        hasMember ? sendmail({ email: email, pin: "use same pin for both user" }) : sendmail({ email: email, pin: String(randomInt) });
-        toastText(
-            "Request accepted",
-            `You have accepted the user: #${userInt}'s registration`,
-            "success"
-          );
-        setRfidTag(null);
-        onClose();
-        refreshFunc();
-      }
+    if (userUpdateError) {
+      console.log("Error adding user: ", userUpdateError);
+      return;
     }
+
+    const { error: userDataInsertError } = await supabase
+      .from("user_data")
+      .insert({
+        user_index: userInt,
+        verify_pin: secureNum,
+        phn_no: phone,
+        nid: nid,
+      });
+
+    if (userDataInsertError) {
+      console.log("Error inserting user data: ", userDataInsertError);
+      return;
+    }
+
+    const { error: cardsUpdateError } = await supabase
+      .from("cards")
+      .update({ user_index: userInt, available: false })
+      .eq('tag_id', selectedOption);
+
+
+    if (cardsUpdateError) {
+      console.log("Error updating cards: ", cardsUpdateError);
+      return;
+    }
+
+    const mailPin = hasMember ? "use same pin for both user" : String(randomInt);
+    sendmail({ email: email, pin: mailPin });
+    toastText(
+      "Request accepted",
+      `You have accepted the user: #${userInt}'s registration`,
+      "success"
+    );
+    setSelectedOption("");
+    onClose();
+    refreshFunc();
+    setLoading(false);
   };
 
   const reject = async (email: string) => {
@@ -198,6 +256,11 @@ export default function ComplexTable() {
     if (error) {
       console.log(error);
     }
+  };
+
+  const onFocus = {
+    borderColor: "teal",
+    boxShadow: "0px 1px 0px 0px teal",
   };
 
   const columns = [
@@ -439,19 +502,27 @@ export default function ComplexTable() {
           <ModalBody pb={6}>
             <FormControl>
               <FormLabel>Card Id</FormLabel>
-              <NumberInput
-                max={11}
-                keepWithinRange={false}
-                clampValueOnBlur={false}
-
+              <Select
+                value={selectedOption}
+                onChange={handleSelectChange}
+                variant={"outline"}
+                fontFamily="'Vollkorn SC', serif"
+                fontSize={18}
+                _focus={onFocus}
+                placeholder="select a tag"
+                required
               >
-                <NumberInputField ref={initialRef} placeholder='eg. 20394201034' onChange={(e) => setRfidTag(parseInt(e.target.value, 10))} />
-              </NumberInput>
+                {cardOption.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Select>
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='teal' mr={3} onClick={() => approve(userEmail, userPhn, userNid, userRfid)}>
+            <Button colorScheme='teal' mr={3} onClick={() => approve(userEmail, userPhn, userNid)} isLoading={loading}>
               Save
             </Button>
             <Button onClick={onModalClose}>Cancel</Button>
@@ -464,7 +535,6 @@ export default function ComplexTable() {
         px="0px"
         overflowX={{ sm: "scroll", lg: "hidden" }}
         minHeight={280}
-        mt="10"
       >
         <Flex px="25px" mb="8px" justifyContent="space-between" align="center">
           <Text
