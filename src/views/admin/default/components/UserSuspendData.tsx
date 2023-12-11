@@ -24,10 +24,11 @@ import {
 } from "@tanstack/react-table";
 // Custom components
 import Card from "components/card/Card";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 // Assets
 import supabase from "data/supabase";
 import moment from "moment";
+import AuthContext from "contexts/AuthContext";
 
 type RowObj = {
   user_index: number;
@@ -243,7 +244,7 @@ export default function ComplexTable() {
       }
     }
   };
-
+  const { admin } = useContext(AuthContext);
   return (
     <Card
       flexDirection="column"
@@ -381,6 +382,7 @@ export default function ComplexTable() {
             rounded={10}
             colorScheme={"teal"}
             onClick={blockEm}
+            isDisabled={admin[0]?.position === "csr"}
           >
             Block
           </Button>
