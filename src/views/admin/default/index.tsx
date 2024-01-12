@@ -7,6 +7,7 @@ import {
 import MiniCalendar from "components/calendar/MiniCalendar";
 import UserRequestData from "views/admin/default/components/UserRequestData";
 import UserSuspendData from "views/admin/default/components/UserSuspendData";
+import UserDeletion from "views/admin/default/components/UserDeletion";
 
 export default function UserReports() {
   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
@@ -18,7 +19,7 @@ export default function UserReports() {
 
       <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
         <UserSuspendData />
-        <MiniCalendar h="100%" minW="100%" selectRange={false} />
+        <UserDeletion />
       </SimpleGrid>
     </Box>
   );

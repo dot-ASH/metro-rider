@@ -39,7 +39,7 @@ export default function Overview() {
   };
   const [adminList, setAdminListData] = useState<DropDownOptios[]>([]);
   const [adminOption, setAdminOption] = useState([]);
-  const [selectedOption, setSelectedOption] = useState("by username");
+  const [selectedOption, setSelectedOption] = useState("");
   const admin_pos = admin[0]?.position;
 
   const getAdminList = useCallback(async () => {

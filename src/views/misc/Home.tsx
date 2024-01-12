@@ -2,11 +2,27 @@ import React from "react";
 import { Flex, Image, Text, Button } from "@chakra-ui/react";
 import logo from "assets/img/logo.png";
 import { useHistory } from "react-router-dom";
+import axios from "axios";
+import { saveAs } from "file-saver";
 
 function Success() {
   const history = useHistory();
   const textColor = "#322E2F";
   const textColorSecondary = "#938585";
+
+  const handleDownload = async () => {
+    const url =
+      "https://github.com/dot-ASH/metro-rail-smart-card-system/blob/main/out/v100.apk";
+
+    try {
+      const response = await axios.get(url, { responseType: "blob" });
+      saveAs(response.data, "v100.apk");
+      console.log("File downloaded successfully!");
+    } catch (error) {
+      console.error("Download error:", error);
+    }
+  };
+
   return (
     <Flex
       w={"100%"}
@@ -103,6 +119,7 @@ function Success() {
           fontFamily="'Vollkorn', serif"
           colorScheme="teal"
           borderRadius={10}
+          onClick={handleDownload}
         >
           Download the App!
         </Button>

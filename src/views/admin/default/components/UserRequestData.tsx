@@ -47,7 +47,7 @@ import { PiHourglassHighBold } from "react-icons/pi";
 import supabase from "data/supabase";
 import moment from "moment";
 import Chance from "chance";
-import { aesHashDecrypt, aesHashEncrypt, sha256HashPin } from "security/encrypt";
+import { aesHashDecrypt,  sha256HashPin } from "security/encrypt";
 import sendmail from "data/sendmail";
 
 type RowObj = {
@@ -76,7 +76,6 @@ export default function ComplexTable() {
   const [userEmail, setUserEmail] = useState<string>("");
   const [userPhn, setUserPhn] = useState<string>("");
   const [userNid, setUserNid] = useState<string>("");
-  const [userRfid, setRfidTag] = useState<number | null>();
   const { isOpen, onOpen, onClose } = useDisclosure()
   const initialRef = useRef(null)
   const finalRef = useRef(null)
@@ -178,7 +177,7 @@ export default function ComplexTable() {
     setLoading(true);
     let hasMember = false;
     let randomInt = chance.integer({ min: 10000, max: 99999 });
-    let userInt = chance.integer({ min: 100000000, max: 999999999 });
+    let userInt = chance.integer({ min: 10000000000, max: 99999999999 });
     let secureNum = sha256HashPin(randomInt.toString());
 
     const { data } = await supabase.from("user_data").select("verify_pin").eq("phn_no", phone);
@@ -197,7 +196,7 @@ export default function ComplexTable() {
       .eq("nid", nid);
 
     if (userUpdateError) {
-      console.log("Error adding user: ", userUpdateError);
+      console.log("Error adding user: ", userUpdateError.message);
       return;
     }
 
@@ -211,7 +210,7 @@ export default function ComplexTable() {
       });
 
     if (userDataInsertError) {
-      console.log("Error inserting user data: ", userDataInsertError);
+      console.log("Error inserting user data: ", userDataInsertError.message);
       return;
     }
 
@@ -222,7 +221,7 @@ export default function ComplexTable() {
 
 
     if (cardsUpdateError) {
-      console.log("Error updating cards: ", cardsUpdateError);
+      console.log("Error updating cards: ", cardsUpdateError.message);
       return;
     }
 
