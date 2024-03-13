@@ -7,9 +7,6 @@ import AdminLayout from "./layouts/admin";
 import Home from "views/misc/Home";
 import Success from "views/misc/Success";
 import Failure from "views/misc/Failure";
-// import RTLLayout from "./layouts/rtl";
-// import MainDashboard from "views/admin/default";
-// import AuthLayout from "./layouts/auth";
 
 const PRE_ROUTE = process.env.REACT_APP_ROUTE_PRE;
 export const AppRouter = () => {

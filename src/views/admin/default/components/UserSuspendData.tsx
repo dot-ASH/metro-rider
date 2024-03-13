@@ -24,7 +24,7 @@ import {
 } from "@tanstack/react-table";
 // Custom components
 import Card from "components/card/Card";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, Key } from "react";
 // Assets
 import supabase from "data/supabase";
 import moment from "moment";
@@ -82,7 +82,7 @@ export default function ComplexTable() {
   }
 
   const refreshFunc = () => {
-    setRefresh((prev) => !prev);
+    setRefresh((prev: any) => !prev);
   };
 
   useEffect(() => {
@@ -274,7 +274,7 @@ export default function ComplexTable() {
         {table.getRowModel().rows.length > 0 ? (
           <Table variant="simple" color="gray.500" mb="24px" mt="12px">
             <Thead>
-              {table.getHeaderGroups().map((headerGroup) => (
+              {table.getHeaderGroups().map((headerGroup: { id: Key; headers: any[]; }) => (
                 <Tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
@@ -308,7 +308,7 @@ export default function ComplexTable() {
               ))}
             </Thead>
             <Tbody>
-              {table.getRowModel().rows.map((row) => {
+              {table.getRowModel().rows.map((row: { id: Key; getVisibleCells: () => any[]; }) => {
                 return (
                   <Tr key={row.id}>
                     {row.getVisibleCells().map((cell) => {

@@ -1,8 +1,89 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap");
+
+@font-face {
+  font-family: "Misto";
+  src: url("../fonts/Misto.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Chromate";
+  src: url("../fonts/Chromate-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Classy Vogue";
+  src: url("../fonts/Classy-Vogue.otf") format("opentype");
+}
+@font-face {
+  font-family: "Margaret-Bold";
+  src: url("../fonts/Margaret-Bold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Aber";
+  src: url("../fonts/AberMono-Light.woff") format("woff");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Aber";
+  src: url("../fonts/AberMono-Regular.woff") format("woff");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Aber";
+  src: url("../fonts/AberMono-Bold.woff") format("woff");
+  font-weight: 800;
+}
+
+:root {
+  scrollbar-width: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
 body {
   font-family: "DM Sans", sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 option {
   color: black;
+}
+
+.misto {
+  font-family: "Misto";
+  letter-spacing: 1px;
+}
+
+.chromate {
+  font-family: "Chromate";
+  letter-spacing: 1px;
+}
+.aber {
+  font-family: "Aber";
+  letter-spacing: 0px;
+  font-weight: 400;
+}
+.margaret {
+  font-family: "Margaret-Bold";
+  letter-spacing: 1px;
+}
+.classy-vogue {
+  font-family: "Classy Vogue";
+  font-weight: bold;
+  letter-spacing: 1.3px;
+}
+#navbar a,
+#navbar p,
+#navbar span {
+  font-family: "Classy Vogue";
+  font-weight: bold;
+  letter-spacing: 1px;
 }

@@ -23,6 +23,6 @@
       "@assets/*": ["./src/assetsassets/*"]
     }
   },
-  "include": ["./src", "./src/contexts/SidebarContext.tsx"],
+  "include": ["./src", "./src/contexts/SidebarContext.tsx", "src/types/.ts"],
   "exclude": ["**/node_modules", "**/template*"]
 }
