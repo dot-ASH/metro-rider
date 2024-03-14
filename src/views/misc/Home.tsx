@@ -226,9 +226,8 @@ function Home() {
       minHeight={"100vh"}
       px={{ base: "1rem", sm: "3rem", lg: "5rem" }}
       py={"1.5rem"}
-      gap="2rem"
+      gap="3rem"
       flexDirection={"column"}
-      overflowY={{ base: "hidden", sm: "auto" }}
     >
       <AlertDialog
         motionPreset="slideInBottom"
@@ -326,7 +325,7 @@ function Home() {
         padding={"2.5rem"}
         gridTemplateColumns={"58% 40%"}
         gap="2rem"
-        mt="0.5rem"
+        mt="-0.5rem"
       >
         <Flex flexDirection={"column"} justifyContent="center" padding={"1rem"}>
           <Text
@@ -629,7 +628,7 @@ function Home() {
         </Flex>
       </Grid>
 
-      <Flex id="about" flexDirection={"column"} mt={"5rem"}>
+      <Flex id="about" flexDirection={"column"} mt={"7rem"}>
         <Flex
           id="imp"
           backgroundColor={COLOR_SHADE.shade2}
@@ -725,7 +724,7 @@ function Home() {
             </Flex>
           </Grid>
         </Flex>
-        <Flex id="demo" mt={"8rem"}>
+        <Flex id="demo" mt={"10rem"}>
           <Flex gap={"4rem"} w={"100%"}>
             <Flex
               justifyContent="space-between"
@@ -738,6 +737,7 @@ function Home() {
                 lineHeight={1}
                 className="margaret"
                 whiteSpace={{ sm: "nowrap", "2xl": "normal" }}
+                color={COLOR_SHADE.shade4}
               >
                 VIDEO DEMO
               </Text>
@@ -834,6 +834,7 @@ function Home() {
                     fontSize={{ sm: "30px", "2xl": "42px" }}
                     className="chromate"
                     ml={"-1rem"}
+                    color={COLOR_SHADE.shade4}
                   >
                     STRIDE
                   </Text>
