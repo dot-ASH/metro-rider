@@ -739,7 +739,7 @@ function Home() {
                 preload="auto"
                 style={{ borderRadius: "1rem" }}
                 muted
-                // autoPlay={true}
+                autoPlay={true}
                 loop={true}
                 playsInline
               >
