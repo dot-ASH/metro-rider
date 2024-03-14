@@ -25,6 +25,15 @@ import {
   AccordionIcon,
 } from "@chakra-ui/react";
 
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+} from "@chakra-ui/react";
+
 import { FaMobile } from "react-icons/fa";
 import { CiMobile2 } from "react-icons/ci";
 import { IoDesktop } from "react-icons/io5";
@@ -49,28 +58,28 @@ const features = [
   {
     name: "Mobile Application",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae aperiam consequatur minima temporibus similique quod iste! Enim repellat saepe aut vero cum veniam tenetur unde, impedit dolorem, commodi doloremque necessitatibus.",
+      "The mobile app allows for easy management of cards and includes features such as balance checking, schedule checking, trip fare, trip history, and user profiles with multi-user capabilities. ",
     icon: FaMobile,
     iconAlt: CiMobile2,
   },
   {
     name: "Admin Panel",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae aperiam consequatur minima temporibus similique quod iste! Enim repellat saepe aut vero cum veniam tenetur unde, impedit dolorem, commodi doloremque necessitatibus.",
+      "The Admin panel can be used for user management in the metro rail system and other card facilities such as validating user registration requests, quick recharge, and suspending users.",
     icon: IoDesktop,
     iconAlt: CiDesktop,
   },
   {
     name: "Contactless Transaction",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae aperiam consequatur minima temporibus similique quod iste! Enim repellat saepe aut vero cum veniam tenetur unde, impedit dolorem, commodi doloremque necessitatibus.",
+      "Online transactions through payment gateways enable a fully contactless experience on metro rails, reducing queues, saving time, and increasing security. ",
     icon: PiContactlessPaymentFill,
     iconAlt: SiContactlesspayment,
   },
   {
     name: "Intruder Prevention",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae aperiam consequatur minima temporibus similique quod iste! Enim repellat saepe aut vero cum veniam tenetur unde, impedit dolorem, commodi doloremque necessitatibus.",
+      "Our system provides real-time updates for each trip, allowing users to receive notifications and block intruders attempting to use the card, effectively stranding them at the station.",
     icon: SiSpringsecurity,
     iconAlt: GiRobberMask,
   },
@@ -121,16 +130,17 @@ const frameworks = [
 function Home() {
   const [border, setBorder] = useState(false);
   const [position, setPosition] = useState<number>();
+  const [windowWidth, setWindowWidth] = useState<number>();
   const [aboutVisible, setAboutVisible] = useState(false);
   const [diagramVisible, setDiagramVisible] = useState(false);
   const [impVisible, setImpVisible] = useState(false);
   const [demoVisible, setDemoVisible] = useState(false);
   const [secuVisible, setSecuVisible] = useState(false);
-
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
 
+  const cancelRef = useRef();
   const container1Ref = useRef(null);
   const container2Ref = useRef(null);
 
@@ -162,10 +172,23 @@ function Home() {
     setPosition(position);
   };
 
+  const handleResize = () => {
+    const width = window.innerWidth;
+    setWindowWidth(width);
+  };
+
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -201,11 +224,31 @@ function Home() {
       backgroundColor={COLOR_SHADE.shade1}
       width={"100vw"}
       minHeight={"100vh"}
-      px={"5rem"}
+      px={{ base: "1rem", sm: "3rem", lg: "5rem" }}
       py={"1.5rem"}
       gap="2rem"
       flexDirection={"column"}
+      overflowY={{ base: "hidden", sm: "auto" }}
     >
+      <AlertDialog
+        motionPreset="slideInBottom"
+        leastDestructiveRef={cancelRef}
+        onClose={() => {}}
+        isOpen={windowWidth < 800 ? true : false}
+        isCentered
+      >
+        <AlertDialogOverlay />
+        <AlertDialogContent backgroundColor={COLOR_SHADE.shade1} w="90%">
+          <AlertDialogHeader className="chromate" textTransform={"uppercase"}>
+            Viewport Alert!
+          </AlertDialogHeader>
+          <AlertDialogBody className="aber">
+            View this webpage on desktop only
+          </AlertDialogBody>
+          <AlertDialogFooter></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Flex
         id="navbar"
         w={"100%"}
@@ -283,10 +326,11 @@ function Home() {
         padding={"2.5rem"}
         gridTemplateColumns={"58% 40%"}
         gap="2rem"
+        mt="0.5rem"
       >
         <Flex flexDirection={"column"} justifyContent="center" padding={"1rem"}>
           <Text
-            fontSize={"11vw"}
+            fontSize={{ sm: "9vw", "2xl": "11vw" }}
             lineHeight={1.2}
             textAlign="left"
             className="misto"
@@ -294,7 +338,7 @@ function Home() {
             METRO
           </Text>
           <Text
-            fontSize={"13vw"}
+            fontSize={{ sm: "10vw", "2xl": "13vw" }}
             lineHeight={1.2}
             textAlign="right"
             className="misto"
@@ -368,8 +412,8 @@ function Home() {
                     ? COLOR_SHADE.shade4
                     : COLOR_SHADE.shade1
                 }
-                display="flex"
-                flexDirection={"row"}
+                display="Grid"
+                gridTemplateColumns={"65% 35%"}
               >
                 <Box>
                   <CardHeader>
@@ -521,7 +565,12 @@ function Home() {
               >
                 {adminImages.map((image, key) => {
                   return (
-                    <Image src={image} height={"24rem"} borderRadius={"1rem"} />
+                    <Image
+                      src={image}
+                      height={"24rem"}
+                      borderRadius={"1rem"}
+                      key={key}
+                    />
                   );
                 })}
               </Flex>
@@ -557,7 +606,7 @@ function Home() {
         </Flex>
       </Grid>
 
-      <Flex id="about" flexDirection={"column"} mt={"3rem"}>
+      <Flex id="about" flexDirection={"column"} mt={"5rem"}>
         <Flex
           id="imp"
           backgroundColor={COLOR_SHADE.shade2}
@@ -633,7 +682,7 @@ function Home() {
             </Text>
           </Flex>
         </Flex>
-        <Flex id="diagram" mt={"6rem"}>
+        <Flex id="diagram" mt={"8rem"}>
           <Grid templateColumns={"repeat(2, 1fr)"} gap={"3rem"}>
             <Box>
               <Image src="payment.png" />
@@ -655,7 +704,12 @@ function Home() {
               w={"35%"}
               gap={"3rem"}
             >
-              <Text fontSize={"7vw"} lineHeight={1} className="margaret">
+              <Text
+                fontSize={{ sm: "4vw", "2xl": "7vw" }}
+                lineHeight={1}
+                className="margaret"
+                whiteSpace={{ sm: "nowrap", "2xl": "wrap" }}
+              >
                 VIDEO DEMO
               </Text>
               <Flex
@@ -724,7 +778,7 @@ function Home() {
             <GridItem
               colSpan={2}
               display={"flex"}
-              flexDirection={"row"}
+              flexDirection={{ sm: "column", "2xl": "row" }}
               alignItems="center"
               backgroundColor={COLOR_SHADE.shade2}
               borderRadius="1rem"
@@ -743,7 +797,7 @@ function Home() {
                 <Flex gap={"2rem"}>
                   <Text
                     style={{ writingMode: "vertical-lr" }}
-                    fontSize="42px"
+                    fontSize={{ sm: "30px", "2xl": "42px" }}
                     className="chromate"
                     ml={"-1rem"}
                   >
@@ -820,29 +874,49 @@ function Home() {
         color={COLOR_SHADE.shade2}
         padding="1rem"
         mt={"3rem"}
-        minHeight={400}
+        minHeight={350}
         className="aber"
-        justifyContent={"center"}
-        alignItems="center"
+        justifyContent={"space-around"}
+        alignItems="flex-end"
+        px={{ sm: "4rem", lg: "6rem" }}
+        py="5rem"
       >
-        <Text>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sequi quae
-          eum similique laudantium ex necessitatibus ipsam tempore, accusamus
-          nobis totam dolore laboriosam iure, eos cum officia dolorum obcaecati,
-          ducimus nihil!
-        </Text>
-        <Text>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sequi quae
-          eum similique laudantium ex necessitatibus ipsam tempore, accusamus
-          nobis totam dolore laboriosam iure, eos cum officia dolorum obcaecati,
-          ducimus nihil!
-        </Text>
-        <Text>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sequi quae
-          eum similique laudantium ex necessitatibus ipsam tempore, accusamus
-          nobis totam dolore laboriosam iure, eos cum officia dolorum obcaecati,
-          ducimus nihil!
-        </Text>
+        <Flex>
+          <Text
+            fontSize={"32px"}
+            lineHeight={1.2}
+            textAlign="left"
+            className="misto"
+          >
+            METRO_
+          </Text>
+          <Text
+            fontSize={"32px"}
+            lineHeight={1.2}
+            textAlign="right"
+            className="misto"
+          >
+            RIDER
+          </Text>
+        </Flex>
+        <Flex flexDirection={"column"} gap="1rem">
+          <Link
+            href="https://github.com/dot-ASH/metro-rail-smart-card-system"
+            isExternal
+          >
+            Source Code(Github)
+          </Link>
+          <Link href="https://sakirashker.vercel.app" isExternal>
+            Developed By Sakir Ashker
+          </Link>
+          <Text>@2024 all right reserved</Text>
+        </Flex>
+        <Flex flexDirection={"column"} gap="1rem">
+          <Link href="features">Feature</Link>
+          <Link href="Snapshots">Snapshots</Link>
+          <Link href="#about">About</Link>
+          <Link href="#">Back To Top</Link>
+        </Flex>
       </Flex>
     </Flex>
   );
