@@ -334,6 +334,7 @@ function Home() {
             lineHeight={1.2}
             textAlign="left"
             className="misto"
+            color={COLOR_SHADE.shade4}
           >
             METRO
           </Text>
@@ -342,6 +343,7 @@ function Home() {
             lineHeight={1.2}
             textAlign="right"
             className="misto"
+            color={COLOR_SHADE.shade4}
           >
             RIDER
           </Text>
@@ -387,6 +389,7 @@ function Home() {
           fontSize={"32px"}
           className="chromate"
           textTransform={"uppercase"}
+          color={COLOR_SHADE.shade4}
         >
           Major services that we offer to the mertro rail system
         </Text>
@@ -485,13 +488,23 @@ function Home() {
             justifyContent="space-between"
             w={"25%"}
           >
-            <Text fontSize={92} className="margaret">
+            <Text fontSize={92} className="margaret" color={COLOR_SHADE.shade4}>
               TAKE
             </Text>
-            <Text fontSize={92} textAlign="center" className="margaret">
+            <Text
+              fontSize={92}
+              textAlign="center"
+              className="margaret"
+              color={COLOR_SHADE.shade4}
+            >
               A
             </Text>
-            <Text fontSize={92} textAlign="right" className="margaret">
+            <Text
+              fontSize={92}
+              textAlign="right"
+              className="margaret"
+              color={COLOR_SHADE.shade4}
+            >
               PEEK
             </Text>
             <Text
@@ -582,13 +595,23 @@ function Home() {
             justifyContent="space-between"
             w={"25%"}
           >
-            <Text fontSize={92} textAlign="right" className="margaret">
+            <Text
+              fontSize={92}
+              textAlign="right"
+              className="margaret"
+              color={COLOR_SHADE.shade4}
+            >
               TAKE
             </Text>
-            <Text fontSize={92} textAlign="center" className="margaret">
+            <Text
+              fontSize={92}
+              textAlign="center"
+              className="margaret"
+              color={COLOR_SHADE.shade4}
+            >
               A
             </Text>
-            <Text fontSize={92} className="margaret">
+            <Text fontSize={92} className="margaret" color={COLOR_SHADE.shade4}>
               PEEK
             </Text>
             <Text
@@ -622,7 +645,13 @@ function Home() {
             overflow="hidden"
             flexDirection={"column"}
           >
-            <Text className="chromate" fontSize={32} mx={"1.5rem"} my="1rem">
+            <Text
+              className="chromate"
+              fontSize={32}
+              mx={"1.5rem"}
+              my="1rem"
+              color={COLOR_SHADE.shade4}
+            >
               Frameworks & Tools
             </Text>
             <Accordion w="100%">
@@ -672,7 +701,7 @@ function Home() {
             </Accordion>
           </Flex>
           <Flex className="aber" flexDirection="column" px={"3rem"} gap="1rem">
-            <Text className="chromate" fontSize={62}>
+            <Text className="chromate" fontSize={62} color={COLOR_SHADE.shade4}>
               WHAT'S THIS ALL ABOUT
             </Text>
             <Text>{info}</Text>
@@ -708,7 +737,7 @@ function Home() {
                 fontSize={{ sm: "4vw", "2xl": "7vw" }}
                 lineHeight={1}
                 className="margaret"
-                whiteSpace={{ sm: "nowrap", "2xl": "wrap" }}
+                whiteSpace={{ sm: "nowrap", "2xl": "normal" }}
               >
                 VIDEO DEMO
               </Text>
@@ -771,7 +800,12 @@ function Home() {
               ></Image>
             </Flex>
             <Flex alignContent={"center"} justifyContent="center">
-              <Text fontSize={"13vw"} mt={"1rem"} className="chromate">
+              <Text
+                fontSize={"13vw"}
+                mt={"1rem"}
+                className="chromate"
+                color={COLOR_SHADE.shade4}
+              >
                 SECURITY
               </Text>
             </Flex>
