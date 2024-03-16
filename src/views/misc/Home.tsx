@@ -287,7 +287,7 @@ function Home() {
               </MenuButton>
               <MenuList backgroundColor={COLOR_SHADE.shade2} borderColor={COLOR_SHADE.shade5} className="aber" fontSize={16}>
                 <MenuItem backgroundColor={COLOR_SHADE.shade2}><a href="#about">About</a></MenuItem>
-                <MenuItem backgroundColor={COLOR_SHADE.shade2}><a href="#feature">Features</a></MenuItem>
+                <MenuItem backgroundColor={COLOR_SHADE.shade2}><a href="#features">Features</a></MenuItem>
                 <MenuItem backgroundColor={COLOR_SHADE.shade2}><a href="#snapshot">Snapshots</a></MenuItem>
               </MenuList>
             </Menu>
@@ -1057,8 +1057,8 @@ function Home() {
           <Text>@2024 all right reserved</Text>
         </Flex>
         <Flex flexDirection={{ base: "row", lg: "column" }} gap="1rem" fontSize={{ base: 14, lg: 18 }}>
-          <Link href="features">Feature</Link>
-          <Link href="Snapshots">Snapshots</Link>
+          <Link href="#features">Feature</Link>
+          <Link href="#snapshot">Snapshots</Link>
           <Link href="#about">About</Link>
           <Link href="#" display={{ base: "none", lg: "block" }}>Back To Top</Link>
         </Flex>
